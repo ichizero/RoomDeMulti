@@ -14,12 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/")
 public class MainServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private dbManager dbm;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
     public MainServlet() {
         super();
+        dbm = new dbManager();
         // TODO Auto-generated constructor stub
     }
 
@@ -39,4 +41,27 @@ public class MainServlet extends HttpServlet {
 		doGet(request, response);
 	}
 
+	protected void login() {
+		dbm.admit();
+	}
+
+	protected void newAccount() {
+		dbm.addAccount();
+	}
+
+	protected void getRoomInf() {
+		dbm.getRoomInf();
+	}
+
+	protected void joinRoom() {
+		dbm.joinRoom();
+	}
+
+	protected void narrowByQuest() {
+		dbm.narrowByQuest();
+	}
+
+	protected void addRequest() {
+		dbm.addRequest();
+	}
 }
