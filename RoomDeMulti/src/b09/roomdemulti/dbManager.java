@@ -2,6 +2,10 @@ package b09.roomdemulti;
 
 public class dbManager {
 
+	private Room room;
+	private User user;
+	private Request request;
+
 	public void admit() {
 
 	}
