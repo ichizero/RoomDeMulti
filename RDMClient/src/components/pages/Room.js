@@ -36,7 +36,6 @@ export default class Room extends React.Component {
       requestMessage: "",
     });
 
-    this.onChangeMessage = this.onChangeMessage.bind(this);
     this.addRequest = this.addRequest.bind(this);
     this.getRequestList = this.getRequestList.bind(this);
   }
@@ -44,11 +43,6 @@ export default class Room extends React.Component {
   componentDidMount() {
     // const newList = this.getRequestList();
     // this.setState({requestList: newList});
-  }
-
-  // 文字入力時にinputフィールドの値を更新する
-  onChangeMessage(e) {
-    this.setState({ requestMessage: e.target.value });
   }
 
   // 募集リストをGETして返す
@@ -63,10 +57,10 @@ export default class Room extends React.Component {
     // ここでサーバーにPOSTして
     // GETする
 
-    if (this.state.requestMessage != "") {
+    if (this.refs.requestMessage.value != "") {
       const list = this.state.requestList;
-      list.push({
-        request: this.state.requestMessage,
+      list.unshift({
+        request: this.refs.requestMessage.value,
         url: "#xxx",
       });
       this.setState({ requestList: list, requestMessage: "" });
@@ -103,7 +97,7 @@ export default class Room extends React.Component {
                   <form>
                     <div className="form-group">
                       <label htmlFor="requestMessage">募集文</label>
-                      <input type="text" value={this.state.requestMessage} onChange={this.onChangeMessage} className="form-control" id="requestMessage" />
+                      <input ref="requestMessage" type="text" className="form-control" id="requestMessage" />
                     </div>
                   </form>
                 </div>
