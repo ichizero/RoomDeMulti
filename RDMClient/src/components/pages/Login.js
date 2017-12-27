@@ -1,89 +1,94 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 
 export default class Login extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = ({
-      userId: "",
-      password: "",
-      userURL: "",
+      isAuthenticated: props.isAuthenticated,
     });
 
-    this.onChangeUserId = this.onChangeUserId.bind(this);
-    this.onChangePassword = this.onChangePassword.bind(this);
-    this.validate = this.validate.bind(this);
-    this.register = this.register.bind(this);
+    this.authUser = this.authUser.bind(this);
+    this.registerUser = this.registerUser.bind(this);
   }
 
-  onChangeUserId(e) {
-    this.setState({ userId: e.target.value });
+  componentWillReceiveProps(nextProps) {
+    if (this.props.isAuthenticated != nextProps.isAuthenticated) {
+      this.setState({ isAuthenticated: nextProps.isAuthenticated });
+    }
   }
 
-  onChangePassword(e) {
-    this.setState({ password: e.target.value });
-  }
-
-  validate(e) {
+  authUser(e) {
     e.preventDefault();
+
+    let userId = this.refs.userId.value;
+    let password = this.refs.password.value;
+    
+    this.props.authUser(userId, password);
   }
 
-  register(e) {
+  registerUser(e) {
     e.preventDefault();
   }
 
   render() {
     return (
-      <div>
-        <form>
-          <div className="form-group">
-            <label htmlFor="inputUserId">ユーザID</label>
-            <input value={this.state.userId} onChange={this.onChangeUserId} type="text" className="form-control" id="inputUserId" placeholder="User ID" />
-          </div>
-          <div className="form-group">
-            <label htmlFor="inputPassword">パスワード</label>
-            <input value={this.state.password} onChange={this.onChangePassword} type="password" className="form-control" id="inputPassword" placeholder="Password" />
-          </div>
-          <div className="d-flex justify-content-around">
-            <button onClick={this.validate} className="btn btn-primary">ログイン</button>
-            <button onClick={this.register} className="btn btn-info" data-toggle="modal" data-target="#registerModal">新規登録</button>
-          </div>
-        </form>
+      this.state.isAuthenticated ?
+        (
+          <Redirect to="/user" />
+        ) : (
+          <div>
+            <form>
+              <div className="form-group">
+                <label htmlFor="inputUserId">ユーザID</label>
+                <input ref="userId" type="text" className="form-control" id="inputUserId" placeholder="User ID" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="inputPassword">パスワード</label>
+                <input ref="password" type="password" className="form-control" id="inputPassword" placeholder="Password" />
+              </div>
+              <div className="d-flex justify-content-around">
+                <button onClick={this.authUser} className="btn btn-primary">ログイン</button>
+                <button onClick={this.registerUser} className="btn btn-info" data-toggle="modal" data-target="#registerModal">新規登録</button>
+              </div>
+            </form>
 
-        <div className="registerDialog">
-          <div className="modal fade" id="registerModal" tabIndex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
-            <div className="modal-dialog" role="document">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="registerModalLabel">新規登録</h5>
-                  <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div className="modal-body">
-                  <form>
-                    <div className="form-group">
-                      <label htmlFor="regiUserId">ユーザID</label>
-                      <input value={this.state.userId} onChange={this.onChangeUserId} type="text" className="form-control" id="regiUserId" placeholder="User ID" />
+            <div className="registerDialog">
+              <div className="modal fade" id="registerModal" tabIndex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
+                <div className="modal-dialog" role="document">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title" id="registerModalLabel">新規登録</h5>
+                      <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
                     </div>
-                    <div className="form-group">
-                      <label htmlFor="regiPassword">パスワード</label>
-                      <input value={this.state.password} onChange={this.onChangePassword} type="password" className="form-control" id="regiPassword" placeholder="Password" />
+                    <div className="modal-body">
+                      <form>
+                        <div className="form-group">
+                          <label htmlFor="regiUserId">ユーザID</label>
+                          <input ref="newUserId" type="text" className="form-control" id="regiUserId" placeholder="User ID" />
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="regiPassword">パスワード</label>
+                          <input ref="newPassword" type="password" className="form-control" id="regiPassword" placeholder="Password" />
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="regiPassword">マルチURL</label>
+                          <input ref="newUserURL" type="text" className="form-control" id="regiUserURL" placeholder="Multi URL" />
+                        </div>
+                      </form>
                     </div>
-                    <div className="form-group">
-                      <label htmlFor="regiPassword">マルチURL</label>
-                      <input value={this.state.userURL} onChange={this.onChangeUserURL} type="text" className="form-control" id="regiUserURL" placeholder="Multi URL" />
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+                      <button onClick={this.registerUser} className="btn btn-primary" data-dismiss="modal">登録</button>
                     </div>
-                  </form>
-                </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-                  <button onClick={this.addregister} className="btn btn-primary" data-dismiss="modal">登録</button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        )
     );
   }
 }
