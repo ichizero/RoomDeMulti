@@ -1,6 +1,8 @@
 package b09.roomdemulti;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 public class MainServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private dbManager dbm;
+	private List roomList;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -22,6 +25,7 @@ public class MainServlet extends HttpServlet {
     public MainServlet() {
         super();
         dbm = new dbManager();
+        roomList = new ArrayList<Room>();
         // TODO Auto-generated constructor stub
     }
 
@@ -41,27 +45,84 @@ public class MainServlet extends HttpServlet {
 		doGet(request, response);
 	}
 
-	protected void login() {
-		dbm.admit();
+	/**
+	 * ログインを行うメソッド
+	 *
+	 * @param id ユーザID
+	 * @param pass パスワード
+	 */
+	protected void login(String id, String pass) {
+		// 認証を行う
+		if(dbm.admit(id, pass)) {
+			// 認証が通れば if 文内を実行
+		}
 	}
 
-	protected void newAccount() {
-		dbm.addAccount();
+	/**
+	 * アカウントの作成を行うメソッド
+	 *
+	 * @param id ユーザID
+	 * @param pass パスワード
+	 * @param multiURL マルチURL
+	 */
+	protected void newAccount(String id, String pass, String multiURL) {
+		// 既に存在するIDでなければ，アカウントをデータベースに追加する
+		if(!dbm.isExistingID(id)) {
+			dbm.addAccount(id, pass, multiURL);
+		} else {
+			System.out.println("既にアカウントが存在します。");
+		}
 	}
 
+	/**
+	 * ルーム一覧を表示するためのメソッド
+	 *
+	 */
+	protected void getRoomList() {
+		// buffer 使って roomList のルーム名を全て追加していく
+	}
+
+	/**
+	 * ルームの追加を行うメソッド
+	 *
+	 * @param roomName ルーム名
+	 */
+	protected void addRoom(String roomName) {
+		dbm.addRoom(roomName);
+	}
+
+	/**
+	 * ???
+	 *
+	 */
 	protected void getRoomInf() {
 		dbm.getRoomInf();
 	}
 
+	/**
+	 * ルームに参加するためのメソッド
+	 * ( Room クラスの userList にユーザを追加する)
+	 *
+	 */
 	protected void joinRoom() {
 		dbm.joinRoom();
 	}
 
-	protected void narrowByQuest() {
-		dbm.narrowByQuest();
+	/**
+	 * room.html でのクエスト募集の一覧で、クエスト名で絞り込みを行うためのメソッド
+	 *
+	 * @param questName クエスト名
+	 */
+	protected void narrowByQuest(String questName) {
+		dbm.narrowByQuest(questName);
 	}
 
-	protected void addRequest() {
-		dbm.addRequest();
+	/**
+	 * クエスト募集を追加するメソッド
+	 *
+	 * @param questName クエスト名
+	 */
+	protected void addRequest(String questName) {
+		dbm.addRequest(questName);
 	}
 }
