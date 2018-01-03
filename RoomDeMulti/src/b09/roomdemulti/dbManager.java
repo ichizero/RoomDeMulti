@@ -38,7 +38,7 @@ public class dbManager {
 				conn = DriverManager.getConnection(sqlurl, sqluser, sqlpass);
 
 				Statement stmt = conn.createStatement();
-			    String sql = "SELECT * FROM users WHERE userName=" + id + ";" ;
+			    String sql = "SELECT * FROM users WHERE userName='" + id + "';" ;
 			    ResultSet rs = stmt.executeQuery(sql);
 
 			    int userID = rs.getInt("userID");
@@ -80,7 +80,31 @@ public class dbManager {
 	 * @param multiURL
 	 */
 	public void addAccount(String id, String pass, String multiURL) {
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			conn = DriverManager.getConnection(sqlurl, sqluser, sqlpass);
 
+			Statement stmt = conn.createStatement();
+			String sql = "INSERT INTO users (userName,userURL,userPass) VALUES ('" + id +
+					"','" + multiURL + "','" + pass + "');";
+			int num = stmt.executeUpdate(sql);
+
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} finally{
+			try{
+				if (conn != null){
+					conn.close();
+				}
+			}catch (SQLException e){
+				System.out.println("SQLException:" + e.getMessage());
+			}
+		}
 	}
 
 	/**
