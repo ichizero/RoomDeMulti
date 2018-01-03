@@ -1,15 +1,44 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 
-export default class Login extends React.Component {
+import PropTypes from 'prop-types';
+import { withStyles } from 'material-ui/styles';
+
+import Grid from 'material-ui/Grid';
+import TextField from 'material-ui/TextField';
+import Button from 'material-ui/Button';
+import Dialog, {
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from 'material-ui/Dialog';
+
+
+const styles = {
+  root: {
+    flexGrow: 1,
+  },
+  tacenter: {
+    textAlign: 'center',
+  },
+};
+
+
+class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = ({
+      userId: "", password: "",
+      newUserId: "", newPassword: "", newUserURL: "",
       isAuthenticated: props.isAuthenticated,
+      openDialog: false,
     });
 
     this.authUser = this.authUser.bind(this);
     this.registerUser = this.registerUser.bind(this);
+    this.handleClickOpen = this.handleClickOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -18,77 +47,119 @@ export default class Login extends React.Component {
     }
   }
 
+  handleClickOpen() {
+    this.setState({ openDialog: true });
+  }
+
+  handleClose() {
+    this.setState({ openDialog: false });
+  }
+
   authUser(e) {
     e.preventDefault();
 
-    let userId = this.refs.userId.value;
-    let password = this.refs.password.value;
-    
+    let userId = this.state.userId;
+    let password = this.state.password;
+
     this.props.authUser(userId, password);
   }
 
   registerUser(e) {
     e.preventDefault();
+    this.handleClose();
   }
 
   render() {
+    const { classes } = this.props;
+
     return (
       this.state.isAuthenticated ?
         (
           <Redirect to="/user" />
         ) : (
-          <div>
-            <form>
-              <div className="form-group">
-                <label htmlFor="inputUserId">ユーザID</label>
-                <input ref="userId" type="text" className="form-control" id="inputUserId" placeholder="User ID" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="inputPassword">パスワード</label>
-                <input ref="password" type="password" className="form-control" id="inputPassword" placeholder="Password" />
-              </div>
-              <div className="d-flex justify-content-around">
-                <button onClick={this.authUser} className="btn btn-primary">ログイン</button>
-                <button onClick={this.registerUser} className="btn btn-info" data-toggle="modal" data-target="#registerModal">新規登録</button>
-              </div>
-            </form>
+          <Grid container spacing={24} className={classes.root}>
+            <Grid item xs={12}>
+              <form>
+                <TextField
+                  id="userId"
+                  label="ユーザID"
+                  value={this.state.userId}
+                  onChange={(e) => this.setState({ userId: e.target.value })}
+                  margin="normal"
+                  fullWidth
+                />
+                <TextField
+                  id="password"
+                  label="パスワード"
+                  value={this.state.password}
+                  onChange={(e) => this.setState({ password: e.target.value })}
+                  type="password"
+                  margin="normal"
+                  fullWidth
+                />
+              </form>
+            </Grid>
+            <Grid item xs={6} className={classes.tacenter}>
+              <Button raised color="primary" onClick={this.authUser}>ログイン</Button>
+            </Grid>
+            <Grid item xs={6} className={classes.tacenter}>
+              <Button raised color="accent" onClick={this.handleClickOpen}>新規登録</Button>
+            </Grid>
 
-            <div className="registerDialog">
-              <div className="modal fade" id="registerModal" tabIndex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
-                <div className="modal-dialog" role="document">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h5 className="modal-title" id="registerModalLabel">新規登録</h5>
-                      <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div className="modal-body">
-                      <form>
-                        <div className="form-group">
-                          <label htmlFor="regiUserId">ユーザID</label>
-                          <input ref="newUserId" type="text" className="form-control" id="regiUserId" placeholder="User ID" />
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor="regiPassword">パスワード</label>
-                          <input ref="newPassword" type="password" className="form-control" id="regiPassword" placeholder="Password" />
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor="regiPassword">マルチURL</label>
-                          <input ref="newUserURL" type="text" className="form-control" id="regiUserURL" placeholder="Multi URL" />
-                        </div>
-                      </form>
-                    </div>
-                    <div className="modal-footer">
-                      <button type="button" className="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-                      <button onClick={this.registerUser} className="btn btn-primary" data-dismiss="modal">登録</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="requestDialog">
+              <Dialog
+                open={this.state.openDialog}
+                onClose={this.handleClose}
+                aria-labelledby="form-dialog-title"
+              >
+                <DialogTitle id="form-dialog-title">新規登録</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    id="newUserId"
+                    label="ユーザID"
+                    value={this.state.newUserId}
+                    onChange={(e) => this.setState({ newUserId: e.target.value })}
+                    margin="normal"
+                    fullWidth
+                  />
+                  <TextField
+                    id="newPassword"
+                    label="パスワード"
+                    value={this.state.newPassword}
+                    onChange={(e) => this.setState({ newPassword: e.target.value })}
+                    type="password"
+                    margin="normal"
+                    fullWidth
+                  />
+                  <TextField
+                    id="newUserURL"
+                    label="マルチURL"
+                    value={this.state.newUserURL}
+                    onChange={(e) => this.setState({ newUserURL: e.target.value })}
+                    margin="normal"
+                    fullWidth
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={this.handleClose} color="primary">
+                    キャンセル
+                  </Button>
+                  <Button onClick={this.registerUser} color="primary">
+                    募集
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </div>
-          </div>
+          </Grid>
         )
     );
   }
 }
+
+
+Login.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+
+export default withStyles(styles)(Login);

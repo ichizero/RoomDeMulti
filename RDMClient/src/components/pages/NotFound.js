@@ -1,7 +1,12 @@
 import React from 'react';
 
-const NotFound = () =>(
-  <h1>Not Found</h1>
+import Typography from 'material-ui/Typography';
+
+
+const NotFound = () => (
+  <Typography type="display2" gutterBottom>
+    Not Found
+  </Typography>
 );
 
 export default NotFound;

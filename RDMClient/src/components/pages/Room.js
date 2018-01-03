@@ -1,12 +1,36 @@
 import React from 'react';
 
+import PropTypes from 'prop-types';
+import { withStyles } from 'material-ui/styles';
+
+import Grid from 'material-ui/Grid';
+import List, { ListItem, ListItemText } from 'material-ui/List';
+import Button from 'material-ui/Button';
+import TextField from 'material-ui/TextField';
+import Dialog, {
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from 'material-ui/Dialog';
+import Typography from 'material-ui/Typography';
+
+
+const styles = {
+  root: {
+    flexGrow: 1,
+  },
+};
+
+
 /**
  * ルーム画面の募集リスト・募集ダイアログを扱う
  */
-export default class Room extends React.Component {
+class Room extends React.Component {
   constructor() {
     super();
     this.state = ({
+      openDialog: false,
       requestList: [
         {
           request: "イザナミ",
@@ -38,11 +62,21 @@ export default class Room extends React.Component {
 
     this.addRequest = this.addRequest.bind(this);
     this.getRequestList = this.getRequestList.bind(this);
+    this.handleClickOpen = this.handleClickOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
   }
 
   componentDidMount() {
     // const newList = this.getRequestList();
     // this.setState({requestList: newList});
+  }
+
+  handleClickOpen() {
+    this.setState({ openDialog: true });
+  }
+
+  handleClose() {
+    this.setState({ openDialog: false });
   }
 
   // 募集リストをGETして返す
@@ -57,10 +91,10 @@ export default class Room extends React.Component {
     // ここでサーバーにPOSTして
     // GETする
 
-    if (this.refs.requestMessage.value != "") {
+    if (this.state.requestMessage != "") {
       const list = this.state.requestList;
       list.unshift({
-        request: this.refs.requestMessage.value,
+        request: this.state.requestMessage,
         url: "#xxx",
       });
       this.setState({ requestList: list, requestMessage: "" });
@@ -68,54 +102,77 @@ export default class Room extends React.Component {
 
     // 最後にリストを更新
     this.getRequestList();
+    this.handleClose();
   }
 
   render() {
+    const { classes } = this.props;
+
     return (
-      <div>
-        <div className="roomHeader">
-          <h1>ルーム1</h1>
-        </div>
+      <Grid container spacing={24} className={classes.root}>
+        <Grid item xs={12}>
+          <Typography type="display2" gutterBottom>
+            るーむ419
+          </Typography>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Button raised color="primary" onClick={this.handleClickOpen}>クエストを募集する</Button>
+        </Grid>
+
+        <Grid item xs={12}>
+          <List>
+            {this.state.requestList.map((index) => {
+              return (
+                <ListItem button component="a" href={index.url} key={index.url}>
+                  <ListItemText primary={index.request} />
+                </ListItem>);
+            })}
+          </List>
+        </Grid>
 
         <div className="requestDialog">
-          <div className="d-flex justify-content-around">
-            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#requestModal">
-              クエストを募集する
-            </button>
-          </div>
-
-          <div className="modal fade" id="requestModal" tabIndex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
-            <div className="modal-dialog" role="document">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="requestModalLabel">クエストを募集する</h5>
-                  <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div className="modal-body">
-                  <form>
-                    <div className="form-group">
-                      <label htmlFor="requestMessage">募集文</label>
-                      <input ref="requestMessage" type="text" className="form-control" id="requestMessage" />
-                    </div>
-                  </form>
-                </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-                  <button onClick={this.addRequest} className="btn btn-primary" data-dismiss="modal">募集</button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Dialog
+            open={this.state.openDialog}
+            onClose={this.handleClose}
+            aria-labelledby="form-dialog-title"
+          >
+            <DialogTitle id="form-dialog-title">クエストを募集する</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                募集文を入力してね！
+              </DialogContentText>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="requestMessage"
+                label="募集文"
+                type="text"
+                fullWidth
+                value={this.state.requestMessage}
+                onChange={(e) => this.setState({ requestMessage: e.target.value })}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.handleClose} color="primary">
+                キャンセル
+              </Button>
+              <Button onClick={this.addRequest} color="primary">
+                募集
+              </Button>
+            </DialogActions>
+          </Dialog>
         </div>
 
-        <div className="list-group">
-          {this.state.requestList.map((index) => {
-            return <a href={index.url} key={index.url} className="list-group-item list-group-item-action">{index.request}</a>;
-          })}
-        </div>
-      </div>
+      </Grid>
     );
   }
 }
+
+
+Room.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+
+export default withStyles(styles)(Room);

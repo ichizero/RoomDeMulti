@@ -1,6 +1,11 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
+import PropTypes from 'prop-types';
+import { withStyles } from 'material-ui/styles';
+
+import Reboot from 'material-ui/Reboot';
+
 import Header from './Header';
 import Login from './pages/Login';
 import User from './pages/User';
@@ -8,7 +13,14 @@ import Room from './pages/Room';
 import NotFound from './pages/NotFound';
 
 
-export default class App extends React.Component {
+const styles = {
+  container: {
+    padding: '3rem',
+  },
+};
+
+
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { isAuthenticated: false };
@@ -28,15 +40,18 @@ export default class App extends React.Component {
   }
 
   render() {
+    const { classes } = this.props;
+
     return (
       <div>
+        <Reboot />
         <Route
           path="/"
           render={
             props => <Header isAuthenticated={this.state.isAuthenticated} {...props} />
           }
         />
-        <main role="main" className="container">
+        <main role="main" className={classes.container}>
           <Switch>
             <Route
               exact path="/"
@@ -53,3 +68,11 @@ export default class App extends React.Component {
     );
   }
 }
+
+
+App.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+
+export default withStyles(styles)(App);
