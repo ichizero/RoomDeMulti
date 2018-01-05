@@ -104,9 +104,10 @@ public class MainServlet extends HttpServlet {
 	 * ルームに参加するためのメソッド
 	 * ( Room クラスの userList にユーザを追加する)
 	 *
+	 * @param roomName ルーム名
 	 */
-	protected void joinRoom() {
-		dbm.joinRoom();
+	protected void joinRoom(String roomName) {
+		dbm.joinRoom(roomName);
 	}
 
 	/**
@@ -122,8 +123,9 @@ public class MainServlet extends HttpServlet {
 	 * クエスト募集を追加するメソッド
 	 *
 	 * @param questName クエスト名
+	 * @param roomName ルーム名
 	 */
-	protected void addRequest(String questName) {
-		dbm.addRequest(questName);
+	protected void addRequest(String questName,String roomName) {
+		dbm.addRequest(questName,roomName);
 	}
 }

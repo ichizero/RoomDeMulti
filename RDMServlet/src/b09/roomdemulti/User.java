@@ -13,4 +13,7 @@ public class User {
 		this.url = url;
 	}
 
+	public String getUserName(){
+		return userName;
+	}
 }

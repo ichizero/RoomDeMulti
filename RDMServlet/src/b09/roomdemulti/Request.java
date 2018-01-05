@@ -1,11 +1,11 @@
 package b09.roomdemulti;
 
 public class Request {
-	private User user;
+	private int userID;
 	private String questName;
 
-	public Request(User user,String questName) {
-		this.user = user;
+	public Request(int userID,String questName) {
+		this.userID = userID;
 		this.questName = questName;
 	}
 }
