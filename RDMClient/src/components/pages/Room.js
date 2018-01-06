@@ -1,6 +1,8 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 
+import request from 'superagent';
+
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 
@@ -64,37 +66,64 @@ class Room extends React.Component {
       requestMessage: "",
     });
 
-    this.addRequest = this.addRequest.bind(this);
-    this.getRequestList = this.getRequestList.bind(this);
-    this.refreshList = this.refreshList.bind(this);
-    this.handleClickOpen = this.handleClickOpen.bind(this);
-    this.handleClose = this.handleClose.bind(this);
+    this.onAddRequest = this.onAddRequest.bind(this);
+    this.onRefreshList = this.onRefreshList.bind(this);
+    this.onDialogOpen = this.onDialogOpen.bind(this);
+    this.onDialogClose = this.onDialogClose.bind(this);
   }
 
+  /**
+   * コンポーネントがマウントされた後に呼び出される
+   */
   componentDidMount() {
-    // const newList = this.getRequestList();
-    // this.setState({requestList: newList});
+    // this.getRequestList().then(res => {
+    //   if (res.statusCode !== 200) {
+    //     console.log("Error Code %d: Getting request list is failed.", res.statusCode);
+    //   } else {
+    //     this.setState({ requestList: res.body });
+    //   }
+    // });
   }
 
-  handleClickOpen() {
-    this.setState({ openDialog: true });
-  }
 
-  handleClose() {
-    this.setState({ openDialog: false });
-  }
-
-  // 募集リストをGETして返す
+  /**
+   * リクエストリストをサーバーに要求する
+   * @return Promiseを返す
+   */
   getRequestList() {
-
+    return request.post("/api")
+      .set('Content-Type', 'application/json')
+      .send({ func: "getRequest" });
   }
 
-  // 新規募集をPOSTする
-  addRequest(e) {
+  /**
+   * サーバーに募集文をPOST送信する
+   * @param requestMessage 募集文
+   * @return Promiseを返す
+   */
+  sendRequest(requestMessage) {
+    return request.post("/api")
+      .set('Content-Type', 'application/json')
+      .send({ func: "addRequest", requestMessage });
+  }
+
+  /**
+   * 新規募集を登録する
+   */
+  onAddRequest(e) {
     e.preventDefault();
     // TODO
     // ここでサーバーにPOSTして
     // GETする
+    // if (this.state.requestMessage != "") {
+    //   this.sendRequest(this.state.requestMessage).then(res => {
+    //     if (res.statusCode !== 200) {
+    //       console.log("Error Code %d: Sending request is failed.", res.statusCode);
+    //     } else {
+    //       this.setState({ requestList: res.body });
+    //     }
+    //   });
+    // }
 
     if (this.state.requestMessage != "") {
       const list = this.state.requestList;
@@ -106,15 +135,41 @@ class Room extends React.Component {
     }
 
     // 最後にリストを更新
-    this.getRequestList();
-    this.handleClose();
+    // this.getRequestList();
+    this.onDialogClose();
   }
-  
-  refreshList(e) {
+
+  /**
+   * リクエストリストを更新する
+   */
+  onRefreshList(e) {
     e.preventDefault();
-
+    // this.getRequestList().then(res => {
+    //   if (res.statusCode !== 200) {
+    //     console.log("Error Code %d: Refreshing request list is failed.", res.statusCode);
+    //   } else {
+    //     this.setState({ requestList: res.body });
+    //   }
+    // });
   }
 
+  /**
+   * ダイアログを表示する
+   */
+  onDialogOpen() {
+    this.setState({ openDialog: true });
+  }
+
+  /**
+   * ダイアログを閉じる
+   */
+  onDialogClose() {
+    this.setState({ openDialog: false });
+  }
+
+  /**
+   * render
+   */
   render() {
     const { classes } = this.props;
 
@@ -131,10 +186,10 @@ class Room extends React.Component {
             </Grid>
 
             <Grid item xs={12}>
-              <Button raised color="primary" onClick={this.handleClickOpen}>クエストを募集する</Button>
+              <Button raised color="primary" onClick={this.onDialogOpen}>クエストを募集する</Button>
             </Grid>
             <Grid item xs={12}>
-              <Button color="primary" onClick={this.refreshList}>
+              <Button color="primary" onClick={this.onRefreshList}>
                 リスト更新<Refresh />
               </Button>
             </Grid>
@@ -157,7 +212,7 @@ class Room extends React.Component {
             <div className="requestDialog">
               <Dialog
                 open={this.state.openDialog}
-                onClose={this.handleClose}
+                onClose={this.onDialogClose}
                 aria-labelledby="form-dialog-title"
               >
                 <DialogTitle id="form-dialog-title">クエストを募集する</DialogTitle>
@@ -177,10 +232,10 @@ class Room extends React.Component {
                   />
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={this.handleClose} color="primary">
+                  <Button onClick={this.onDialogClose} color="primary">
                     キャンセル
                   </Button>
-                  <Button onClick={this.addRequest} color="primary">
+                  <Button onClick={this.onAddRequest} color="primary">
                     募集
                   </Button>
                 </DialogActions>

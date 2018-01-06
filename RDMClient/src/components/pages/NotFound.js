@@ -4,9 +4,14 @@ import Typography from 'material-ui/Typography';
 
 
 const NotFound = () => (
-  <Typography type="display2" gutterBottom>
-    Not Found
-  </Typography>
+  <div>
+    <Typography type="display2" gutterBottom>
+      404 Not Found
+    </Typography>
+    <Typography type="display1" gutterBottom>
+      お探しのページは見つかりませんでした。
+    </Typography>
+  </div>
 );
 
 export default NotFound;

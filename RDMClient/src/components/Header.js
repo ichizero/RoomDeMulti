@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -59,7 +60,7 @@ class Header extends React.Component {
               <MenuIcon />
             </IconButton> */}
             <Typography type="title" color="inherit" className={classes.flex}>
-              ルームDEマルチ！
+              <Link to="/" style={{color: "white", textDecoration: "none"}}>ルームDEマルチ！</Link>
             </Typography>
             {isAuthenticated && (
               <Button raised color="accent" onClick={this.logoutUser} >ログアウト</Button>

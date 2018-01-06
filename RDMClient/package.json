@@ -2,6 +2,8 @@
   "name": "rdm-client",
   "version": "1.0.0",
   "description": "",
+  "repository": "",
+  "license": "",
   "scripts": {
     "dev": "webpack-dev-server --hot --inline",
     "watch": "webpack --watch --progress",
@@ -23,6 +25,7 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-router-dom": "^4.2.2",
+    "superagent": "^3.8.2",
     "universal-cookie": "^2.1.2"
   }
 }
