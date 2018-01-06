@@ -1,4 +1,5 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -27,9 +28,10 @@ const styles = {
  * ルーム画面の募集リスト・募集ダイアログを扱う
  */
 class Room extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = ({
+      isAuthenticated: props.isAuthenticated,
       openDialog: false,
       requestList: [
         {
@@ -109,62 +111,66 @@ class Room extends React.Component {
     const { classes } = this.props;
 
     return (
-      <Grid container spacing={24} className={classes.root}>
-        <Grid item xs={12}>
-          <Typography type="display2" gutterBottom>
-            るーむ419
-          </Typography>
-        </Grid>
+      !(this.state.isAuthenticated) ?
+        (
+          <Redirect to="/" />
+        ) : (
+          <Grid container spacing={24} className={classes.root}>
+            <Grid item xs={12}>
+              <Typography type="display2" gutterBottom>
+                るーむ419
+              </Typography>
+            </Grid>
 
-        <Grid item xs={12}>
-          <Button raised color="primary" onClick={this.handleClickOpen}>クエストを募集する</Button>
-        </Grid>
+            <Grid item xs={12}>
+              <Button raised color="primary" onClick={this.handleClickOpen}>クエストを募集する</Button>
+            </Grid>
 
-        <Grid item xs={12}>
-          <List>
-            {this.state.requestList.map((index) => {
-              return (
-                <ListItem button component="a" href={index.url} key={index.url}>
-                  <ListItemText primary={index.request} />
-                </ListItem>);
-            })}
-          </List>
-        </Grid>
+            <Grid item xs={12}>
+              <List>
+                {this.state.requestList.map((index) => {
+                  return (
+                    <ListItem button component="a" href={index.url} key={index.url}>
+                      <ListItemText primary={index.request} />
+                    </ListItem>);
+                })}
+              </List>
+            </Grid>
 
-        <div className="requestDialog">
-          <Dialog
-            open={this.state.openDialog}
-            onClose={this.handleClose}
-            aria-labelledby="form-dialog-title"
-          >
-            <DialogTitle id="form-dialog-title">クエストを募集する</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                募集文を入力してね！
-              </DialogContentText>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="requestMessage"
-                label="募集文"
-                type="text"
-                fullWidth
-                value={this.state.requestMessage}
-                onChange={(e) => this.setState({ requestMessage: e.target.value })}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={this.handleClose} color="primary">
-                キャンセル
-              </Button>
-              <Button onClick={this.addRequest} color="primary">
-                募集
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </div>
-
-      </Grid>
+            <div className="requestDialog">
+              <Dialog
+                open={this.state.openDialog}
+                onClose={this.handleClose}
+                aria-labelledby="form-dialog-title"
+              >
+                <DialogTitle id="form-dialog-title">クエストを募集する</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    募集文を入力してね！
+                  </DialogContentText>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    id="requestMessage"
+                    label="募集文"
+                    type="text"
+                    fullWidth
+                    value={this.state.requestMessage}
+                    onChange={(e) => this.setState({ requestMessage: e.target.value })}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={this.handleClose} color="primary">
+                    キャンセル
+                  </Button>
+                  <Button onClick={this.addRequest} color="primary">
+                    募集
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </div>
+          </Grid>
+        )
     );
   }
 }

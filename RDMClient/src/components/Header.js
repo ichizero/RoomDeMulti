@@ -31,12 +31,20 @@ class Header extends React.Component {
     this.state = {
       isAuthenticated: props.isAuthenticated,
     };
+
+    this.logoutUser = this.logoutUser.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.isAuthenticated != nextProps.isAuthenticated) {
       this.setState({ isAuthenticated: nextProps.isAuthenticated });
     }
+  }
+
+  logoutUser(e) {
+    e.preventDefault();
+    this.props.logoutUser();
+    this.props.history.push('/');
   }
 
   render() {
@@ -54,7 +62,7 @@ class Header extends React.Component {
               ルームDEマルチ！
             </Typography>
             {isAuthenticated && (
-              <Button color="contrast">ログアウト</Button>
+              <Button onClick={this.logoutUser}  color="contrast">ログアウト</Button>
             )}
           </Toolbar>
         </AppBar>
