@@ -55,14 +55,14 @@ class Header extends React.Component {
       <div className={classes.root}>
         <AppBar position="static">
           <Toolbar>
-            <IconButton className={classes.menuButton} color="contrast" aria-label="Menu">
+            {/* <IconButton className={classes.menuButton} color="contrast" aria-label="Menu">
               <MenuIcon />
-            </IconButton>
+            </IconButton> */}
             <Typography type="title" color="inherit" className={classes.flex}>
               ルームDEマルチ！
             </Typography>
             {isAuthenticated && (
-              <Button onClick={this.logoutUser}  color="contrast">ログアウト</Button>
+              <Button raised color="accent" onClick={this.logoutUser} >ログアウト</Button>
             )}
           </Toolbar>
         </AppBar>

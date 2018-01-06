@@ -6,6 +6,7 @@ import { withStyles } from 'material-ui/styles';
 
 import Grid from 'material-ui/Grid';
 import List, { ListItem, ListItemText } from 'material-ui/List';
+import Divider from 'material-ui/Divider';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import Dialog, {
@@ -16,6 +17,7 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import Typography from 'material-ui/Typography';
 
+import Refresh from 'material-ui-icons/Refresh';
 
 const styles = {
   root: {
@@ -64,6 +66,7 @@ class Room extends React.Component {
 
     this.addRequest = this.addRequest.bind(this);
     this.getRequestList = this.getRequestList.bind(this);
+    this.refreshList = this.refreshList.bind(this);
     this.handleClickOpen = this.handleClickOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
@@ -106,6 +109,11 @@ class Room extends React.Component {
     this.getRequestList();
     this.handleClose();
   }
+  
+  refreshList(e) {
+    e.preventDefault();
+
+  }
 
   render() {
     const { classes } = this.props;
@@ -125,14 +133,23 @@ class Room extends React.Component {
             <Grid item xs={12}>
               <Button raised color="primary" onClick={this.handleClickOpen}>クエストを募集する</Button>
             </Grid>
+            <Grid item xs={12}>
+              <Button color="primary" onClick={this.refreshList}>
+                リスト更新<Refresh />
+              </Button>
+            </Grid>
 
             <Grid item xs={12}>
               <List>
                 {this.state.requestList.map((index) => {
                   return (
-                    <ListItem button component="a" href={index.url} key={index.url}>
-                      <ListItemText primary={index.request} />
-                    </ListItem>);
+                    <div>
+                      <ListItem button component="a" href={index.url} key={index.url}>
+                        <ListItemText primary={index.request} />
+                      </ListItem>
+                      <Divider />
+                    </div>
+                  );
                 })}
               </List>
             </Grid>
