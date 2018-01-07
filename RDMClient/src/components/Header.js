@@ -25,7 +25,9 @@ const styles = {
   },
 };
 
-
+/**
+ * ヘッダーを扱う
+ */
 class Header extends React.Component {
   constructor(props) {
     super(props);
@@ -33,21 +35,31 @@ class Header extends React.Component {
       isAuthenticated: props.isAuthenticated,
     };
 
-    this.logoutUser = this.logoutUser.bind(this);
+    this.onLogoutUser = this.onLogoutUser.bind(this);
   }
 
+  /**
+   * コンポーネントがpropsを受け取る時
+   * @param nextProps 受け取るprops
+   */
   componentWillReceiveProps(nextProps) {
     if (this.props.isAuthenticated != nextProps.isAuthenticated) {
       this.setState({ isAuthenticated: nextProps.isAuthenticated });
     }
   }
 
-  logoutUser(e) {
+  /**
+   * ログアウト処理を行う
+   */
+  onLogoutUser(e) {
     e.preventDefault();
-    this.props.logoutUser();
+    this.props.onLogoutUser();
     this.props.history.push('/');
   }
 
+  /**
+   * render
+   */
   render() {
     const { classes } = this.props;
     const { isAuthenticated } = this.state;
@@ -63,7 +75,7 @@ class Header extends React.Component {
               <Link to="/" style={{color: "white", textDecoration: "none"}}>ルームDEマルチ！</Link>
             </Typography>
             {isAuthenticated && (
-              <Button raised color="accent" onClick={this.logoutUser} >ログアウト</Button>
+              <Button raised color="accent" onClick={this.onLogoutUser} >ログアウト</Button>
             )}
           </Toolbar>
         </AppBar>

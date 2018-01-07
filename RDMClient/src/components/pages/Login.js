@@ -24,7 +24,9 @@ const styles = {
   },
 };
 
-
+/**
+ * ログイン画面を扱う
+ */
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -35,8 +37,8 @@ class Login extends React.Component {
       openDialog: false,
     });
 
-    this.authUser = this.authUser.bind(this);
-    this.registerUser = this.registerUser.bind(this);
+    this.onAuthUser = this.onAuthUser.bind(this);
+    this.onRegisterUser = this.onRegisterUser.bind(this);
     this.handleClickOpen = this.handleClickOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
@@ -55,18 +57,27 @@ class Login extends React.Component {
     this.setState({ openDialog: false });
   }
 
-  authUser(e) {
+  onAuthUser(e) {
     e.preventDefault();
 
-    let userId = this.state.userId;
-    let password = this.state.password;
+    const userId = this.state.userId;
+    const password = this.state.password;
 
-    this.props.authUser(userId, password);
+    if (userId !== "" && password !== "") {
+      this.props.onAuthUser(userId, password);
+    }
   }
 
-  registerUser(e) {
+  onRegisterUser(e) {
     e.preventDefault();
-    this.handleClose();
+
+    const userId = this.state.newUserId;
+    const password = this.state.newPassword;
+    const userURL = this.state.newUserURL;
+    if (userId !== "" && password !== "" && userURL !== "") {
+      this.props.onRegisterUser(userId, password, userURL);
+      this.handleClose();
+    }
   }
 
   render() {
@@ -100,7 +111,7 @@ class Login extends React.Component {
               </form>
             </Grid>
             <Grid item xs={6} className={classes.tacenter}>
-              <Button raised color="primary" onClick={this.authUser}>ログイン</Button>
+              <Button raised color="primary" onClick={this.onAuthUser}>ログイン</Button>
             </Grid>
             <Grid item xs={6} className={classes.tacenter}>
               <Button raised color="accent" onClick={this.handleClickOpen}>新規登録</Button>
@@ -144,7 +155,7 @@ class Login extends React.Component {
                   <Button onClick={this.handleClose} color="primary">
                     キャンセル
                   </Button>
-                  <Button onClick={this.registerUser} color="primary">
+                  <Button onClick={this.onRegisterUser} color="primary">
                     募集
                   </Button>
                 </DialogActions>

@@ -76,13 +76,9 @@ class Room extends React.Component {
    * コンポーネントがマウントされた後に呼び出される
    */
   componentDidMount() {
-    // this.getRequestList().then(res => {
-    //   if (res.statusCode !== 200) {
-    //     console.log("Error Code %d: Getting request list is failed.", res.statusCode);
-    //   } else {
-    //     this.setState({ requestList: res.body });
-    //   }
-    // });
+    // this.getRequestList()
+    //   .then(res => this.setState({ requestList: res.body }))
+    //   .catch(err => console.log("Error: %s", err.message));
   }
 
 
@@ -112,17 +108,11 @@ class Room extends React.Component {
    */
   onAddRequest(e) {
     e.preventDefault();
-    // TODO
-    // ここでサーバーにPOSTして
-    // GETする
+
     // if (this.state.requestMessage != "") {
-    //   this.sendRequest(this.state.requestMessage).then(res => {
-    //     if (res.statusCode !== 200) {
-    //       console.log("Error Code %d: Sending request is failed.", res.statusCode);
-    //     } else {
-    //       this.setState({ requestList: res.body });
-    //     }
-    //   });
+    //   this.sendRequest(this.state.requestMessage)
+    //     .then(res => this.setState({ requestList: res.body }))
+    //     .catch(err => console.log("Error: %s", err.message));
     // }
 
     if (this.state.requestMessage != "") {
@@ -144,13 +134,10 @@ class Room extends React.Component {
    */
   onRefreshList(e) {
     e.preventDefault();
-    // this.getRequestList().then(res => {
-    //   if (res.statusCode !== 200) {
-    //     console.log("Error Code %d: Refreshing request list is failed.", res.statusCode);
-    //   } else {
-    //     this.setState({ requestList: res.body });
-    //   }
-    // });
+
+    // this.getRequestList()
+    //   .then(res => this.setState({ requestList: res.body }))
+    //   .catch(err => console.log("Error: %s", err.message));
   }
 
   /**
