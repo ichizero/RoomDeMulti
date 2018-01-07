@@ -19,8 +19,6 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import Typography from 'material-ui/Typography';
 
-import Refresh from 'material-ui-icons/Refresh';
-
 const styles = {
   root: {
     flexGrow: 1,
@@ -32,24 +30,25 @@ class User extends React.Component {
     super(props);
     this.state = ({
       isAuthenticated: props.isAuthenticated,
+      cookies: props.cookies,
       openDialog: false,
       openDialog2: false,
       roomList: [
         {
-          room: "るーむ1",
-          url: "#1",
+          roomId: "るーむ1",
+          userURL: "#1",
         },
         {
-          room: "るーむ2",
-          url: "#22",
+          roomId: "るーむ2",
+          userURL: "#22",
         },
         {
-          room: "るーむ3",
-          url: "#33",
+          roomId: "るーむ3",
+          userURL: "#33",
         },
         {
-          room: "るーむ419",
-          url: "#419",
+          roomId: "るーむ419",
+          userURL: "#419",
         },
       ],
       roomName: "",
@@ -66,7 +65,10 @@ class User extends React.Component {
    * コンポーネントがマウントされた後に呼び出される
    */
   componentDidMount() {
-    // this.getRoomList()
+    this.setState({
+      userId: this.state.cookies.get('userId'),
+    });
+    // this.getRoomList(this.state.userId)
     //   .then(res => this.setState({ roomList: res.body }))
     //   .catch(err => console.log("Error: %s", err.message));
   }
@@ -76,21 +78,34 @@ class User extends React.Component {
    * ルームリストをサーバーに要求する
    * @return Promiseを返す
    */
-  getRoomList() {
+  getRoomList(userId) {
     return request.post("/api")
       .set('Content-Type', 'application/json')
-      .send({ func: "getRoomName" });
+      .send({ func: "getRoomList", userId });
   }
 
   /**
    * サーバーにルーム名をPOST送信する
-   * @param roomName ルーム名
+   * @param roomId ルーム名
+   * @param userId ユーザ名
    * @return Promiseを返す
    */
-  sendRoomName(roomName) {
+  createRoom(roomId, userId) {
     return request.post("/api")
       .set('Content-Type', 'application/json')
-      .send({ func: "addRoomName", roomName });
+      .send({ func: "createRoom", roomId, userId });
+  }
+
+  /**
+   * サーバーにルーム名をPOST送信する
+   * @param roomId ルーム名
+   * @param userId ユーザ名
+   * @return Promiseを返す
+   */
+  joinRoom(roomId, userId) {
+    return request.post("/api")
+      .set('Content-Type', 'application/json')
+      .send({ func: "joinRoom", roomId, userId });
   }
 
   /**
@@ -100,22 +115,12 @@ class User extends React.Component {
     e.preventDefault();
 
     // if (this.state.roomName != "") {
-    //   this.sendRoomName(this.state.roomName)
+    //   this.createRoom(this.state.roomName)
     //     .then(res => this.setState({ roomList: res.body }))
     //     .catch(err => console.log("Error: %s", err.message));
     // }
 
-    if (this.state.roomName != "") {
-      const list = this.state.roomList;
-      list.unshift({
-        request: this.state.roomName,
-        url: "#xxx",
-      });
-      this.setState({ roomList: list, roomName: "" });
-    }
-
-    // 最後にリストを更新
-    // this.getRoomList();
+    // this.getRoomList(this.state.userId);
     this.onDialogClose();
   }
 
@@ -126,19 +131,12 @@ class User extends React.Component {
     e.preventDefault();
 
     // if (this.state.roomName != "") {
-    //   this.sendRoomName(this.state.roomName)
+    //   this.joinRoom(this.state.roomName)
     //     .then(res => this.setState({ roomList: res.body }))
     //     .catch(err => console.log("Error: %s", err.message));
     // }
 
-    if (this.state.roomName != "") {
-      const list = this.state.roomList;
-      list.unshift({
-        request: this.state.roomName,
-        url: "#xxx",
-      });
-      this.setState({ roomList: list, roomName: "" });
-    }
+    this.onDialog2Close();
   }
 
 
@@ -187,12 +185,14 @@ class User extends React.Component {
           <Grid container spacing={24} className={classes.root}>
             <Grid item xs={12}>
               <Typography type="display2" gutterBottom>
-                ゆーざ
+                ルーム一覧
               </Typography>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <Button raised color="primary" onClick={this.onDialogOpen}>ルームを作成する</Button>
+            </Grid>
+            <Grid item xs={6}>
               <Button raised color="primary" onClick={this.onDialog2Open}>ルームに参加する</Button>
             </Grid>
 
@@ -201,8 +201,8 @@ class User extends React.Component {
                 {this.state.roomList.map((index) => {
                   return (
                     <div>
-                      <ListItem button component="a" href={index.url} key={index.url}>
-                        <ListItemText primary={index.room} />
+                      <ListItem button component="a" href={index.userURL} key={index.userURL}>
+                        <ListItemText primary={index.roomId} />
                       </ListItem>
                       <Divider />
                     </div>
@@ -238,7 +238,7 @@ class User extends React.Component {
                   <Button onClick={this.onDialogClose} color="primary">
                     キャンセル
                   </Button>
-                  <Button onClick={this.onCeateRoom} color="primary">
+                  <Button onClick={this.onCreateRoom} color="primary">
                     作成
                   </Button>
                 </DialogActions>
