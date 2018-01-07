@@ -58,11 +58,11 @@ public class dbManager {
 
 						ArrayList<Integer> num = new ArrayList<Integer>();
 						while(rs.next()){
-							int roomID = rs.getString("roomID");
+							int roomID = rs.getInt("roomID");
 							num.add(roomID);
 						}
 						
-						for(i=0;num.size() - 1;i++){
+						for(int i=0;i == num.size()-1;i++){
 							sql = "SELECT * FROM rooms WHERE roomID=" + num.get(i) + ";";
 							rs = stmt.executeQuery(sql);
 	
