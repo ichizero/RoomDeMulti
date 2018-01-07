@@ -1,6 +1,7 @@
 package b09.roomdemulti;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +40,13 @@ public class MainServlet extends HttpServlet {
 		builder.append('{');
 
 		// ユーザID
-		String userId;
+		String userId = null;
 		// パスワード
-		String password;
+		String password = null;
 		// ユーザのマルチURL
-		String userURL;
+		String userURL = null;
 		// ルームID
-		String roomId;
+		String roomId = null;
 
 		// func によって処理を変える
 		switch(func) {
