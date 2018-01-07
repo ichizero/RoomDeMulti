@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+
 public class dbManager {
 
 	private ArrayList<Room> rooms;
@@ -39,6 +40,7 @@ public class dbManager {
 				Statement stmt = conn.createStatement();
 				String sql = "SELECT * FROM users WHERE userName='" + id + "';";
 				ResultSet rs = stmt.executeQuery(sql);
+				JSONArray jsonArray = convertToJSON(rs);
 
 				int userID = rs.getInt("userID");
 				String userName = rs.getString("userName");
@@ -121,7 +123,7 @@ public class dbManager {
 			conn = DriverManager.getConnection("jdbc:sqlite:" + database_path);
 
 			Statement stmt = conn.createStatement();
-			String sql = "INSERT INTO users (userName,userURL,userPass) VALUES ('" + id + "','" + multiURL + "','"
+			String sql = "INSERT INTO users VALUES (null,'" + id + "','" + multiURL + "','"
 					+ pass + "');";
 			int num = stmt.executeUpdate(sql);
 
@@ -162,7 +164,7 @@ public class dbManager {
 			conn = DriverManager.getConnection(sqlurl, sqluser, sqlpass);
 
 			Statement stmt = conn.createStatement();
-			String sql = "INSERT INTO rooms (roomName) VALUES ('" + roomName + "');";
+			String sql = "INSERT INTO rooms VALUES (null,'" + roomName + "');";
 			int num = stmt.executeUpdate(sql);
 
 			stmt.close();
