@@ -15,6 +15,10 @@ public class Room {
 		requestList = new ArrayList<Request>();
 	}
 
+	public int getRoomID(){
+		return roomID;
+	}
+
 	public void addUser(User user){
 		userList.add(user);
 	}
