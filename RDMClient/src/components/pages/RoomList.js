@@ -8,7 +8,6 @@ import { withStyles } from 'material-ui/styles';
 
 import Grid from 'material-ui/Grid';
 import List, { ListItem, ListItemText } from 'material-ui/List';
-import Divider from 'material-ui/Divider';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import Dialog, {
@@ -25,7 +24,7 @@ const styles = {
   },
 };
 
-class User extends React.Component {
+class RoomList extends React.Component {
   constructor(props) {
     super(props);
     this.state = ({
@@ -35,20 +34,20 @@ class User extends React.Component {
       openDialog2: false,
       roomList: [
         {
-          roomId: "るーむ1",
-          userURL: "#1",
+          roomId: "るーむ",
+          userURL: "/tomoya",
         },
         {
           roomId: "るーむ2",
-          userURL: "#22",
+          userURL: "/mura",
         },
         {
           roomId: "るーむ3",
-          userURL: "#33",
+          userURL: "/むら",
         },
         {
           roomId: "るーむ419",
-          userURL: "#419",
+          userURL: "/419",
         },
       ],
       roomName: "",
@@ -169,7 +168,7 @@ class User extends React.Component {
   onDialog2Close() {
     this.setState({ openDialog2: false });
   }
-
+  
 
   /**
    * render
@@ -201,10 +200,9 @@ class User extends React.Component {
                 {this.state.roomList.map((index) => {
                   return (
                     <div>
-                      <ListItem button component="a" href={index.userURL} key={index.userURL}>
+                      <ListItem button divider component="a" href={"/room/" + index.roomId} key={index.roomId} >
                         <ListItemText primary={index.roomId} />
                       </ListItem>
-                      <Divider />
                     </div>
                   );
                 })}
@@ -285,9 +283,9 @@ class User extends React.Component {
 
 
 
-User.propTypes = {
+RoomList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
 
-export default withStyles(styles)(User);
+export default withStyles(styles)(RoomList);

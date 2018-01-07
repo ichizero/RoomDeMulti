@@ -86,7 +86,7 @@ class Login extends React.Component {
     return (
       this.state.isAuthenticated ?
         (
-          <Redirect to="/user" />
+          <Redirect to="/room" />
         ) : (
           <Grid container spacing={24} className={classes.root}>
             <Grid item xs={12}>

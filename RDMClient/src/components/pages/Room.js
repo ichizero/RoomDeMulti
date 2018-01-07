@@ -8,7 +8,6 @@ import { withStyles } from 'material-ui/styles';
 
 import Grid from 'material-ui/Grid';
 import List, { ListItem, ListItemText } from 'material-ui/List';
-import Divider from 'material-ui/Divider';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import Dialog, {
@@ -34,10 +33,11 @@ const styles = {
 class Room extends React.Component {
   constructor(props) {
     super(props);
+    console.log(props.match.params);
     this.state = ({
       isAuthenticated: props.isAuthenticated,
       cookies: props.cookies,
-      roomId: '419',
+      roomId: props.match.params.id,
       openDialog: false,
       requestList: [
         {
@@ -175,7 +175,7 @@ class Room extends React.Component {
           <Grid container spacing={24} className={classes.root}>
             <Grid item xs={12}>
               <Typography type="display2" gutterBottom>
-                るーむ419
+                {this.state.roomId}
               </Typography>
             </Grid>
 
@@ -193,10 +193,9 @@ class Room extends React.Component {
                 {this.state.requestList.map((index) => {
                   return (
                     <div>
-                      <ListItem button component="a" href={index.url} key={index.url}>
+                      <ListItem button divider component="a" href={index.url} key={index.url}>
                         <ListItemText primary={index.request} />
                       </ListItem>
-                      <Divider />
                     </div>
                   );
                 })}

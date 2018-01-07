@@ -12,7 +12,7 @@ import Reboot from 'material-ui/Reboot';
 
 import Header from './Header';
 import Login from './pages/Login';
-import User from './pages/User';
+import RoomList from './pages/RoomList';
 import Room from './pages/Room';
 import NotFound from './pages/NotFound';
 
@@ -143,8 +143,8 @@ class App extends React.Component {
                 props => <Login isAuthenticated={this.state.isAuthenticated} onAuthUser={this.onAuthUser} onRegisterUser={this.onRegisterUser} />
               }
             />
-            <Route path="/user" render={props => <User isAuthenticated={this.state.isAuthenticated} cookies={this.state.cookies} />} />
-            <Route path="/room" render={props => <Room isAuthenticated={this.state.isAuthenticated} cookies={this.state.cookies} />} />
+            <Route exact path="/room" render={props => <RoomList isAuthenticated={this.state.isAuthenticated} cookies={this.state.cookies} />} />
+            <Route path="/room/:id" render={props => <Room isAuthenticated={this.state.isAuthenticated} cookies={this.state.cookies} {...props} />} />
             <Route component={NotFound} />
           </Switch>
         </main>
