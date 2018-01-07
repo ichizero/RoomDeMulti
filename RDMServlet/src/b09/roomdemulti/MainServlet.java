@@ -19,15 +19,15 @@ public class MainServlet extends HttpServlet {
 	private dbManager dbm;
 	private List roomList;
 
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public MainServlet() {
-        super();
-        dbm = new dbManager();
-        roomList = new ArrayList<Room>();
-        // TODO Auto-generated constructor stub
-    }
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public MainServlet() {
+		super();
+		dbm = new dbManager();
+		roomList = new ArrayList<Room>();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -84,7 +84,7 @@ public class MainServlet extends HttpServlet {
 	 */
 	protected void login(String id, String pass) {
 		// 認証を行う
-		if(dbm.admit(id, pass)) {
+		if (dbm.admit(id, pass)) {
 			// 認証が通れば if 文内を実行
 		}
 	}
@@ -98,7 +98,7 @@ public class MainServlet extends HttpServlet {
 	 */
 	protected void newAccount(String id, String pass, String multiURL) {
 		// 既に存在するIDでなければ，アカウントをデータベースに追加する
-		if(!dbm.isExistingID(id)) {
+		if (!dbm.isExistingID(id)) {
 			dbm.addAccount(id, pass, multiURL);
 		} else {
 			System.out.println("既にアカウントが存在します。");
@@ -157,7 +157,7 @@ public class MainServlet extends HttpServlet {
 	 * @param roomName ルーム名
 	 * @param userId ユーザID
 	 */
-	protected void addRequest(String requestMessage, String roomName, String userID) {
-		dbm.addRequest(requestMessage, roomName, userID);
+	protected void addRequest(String requestMessage, String roomName) {
+		dbm.addRequest(requestMessage, roomName);
 	}
 }
