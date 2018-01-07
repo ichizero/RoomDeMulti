@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 public class MainServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private dbManager dbm;
-	private List roomList;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -26,7 +25,6 @@ public class MainServlet extends HttpServlet {
 	public MainServlet() {
 		super();
 		dbm = new dbManager();
-		roomList = new ArrayList<Room>();
 		// TODO Auto-generated constructor stub
 	}
 
@@ -47,52 +45,57 @@ public class MainServlet extends HttpServlet {
 		String userURL = null;
 		// ルームID
 		String roomId = null;
+		// dbManager から受け取った文字列を格納
+		String buff = "";
 
 		// func によって処理を変える
 		switch(func) {
 		case "auth":
 			userId = request.getParameter("userId");
 			password = request.getParameter("password");
-			// if (this.login(userId, password)) {
-				builder.append("\"userId\":\"").append(userId).append("\",");
-				builder.append("\"userURL\":\"").append(userURL).append("\"");
-			// }
+			buff = this.login(userId, password);
+			builder.append(buff);
 			break;
 		case "regi":
 			userId = request.getParameter("userId");
 			password = request.getParameter("password");
 			userURL = request.getParameter("userURL");
-			// if (this.isRegistered(userId, password, userURL)) {
-				builder.append("\"userId\":\"").append(userId).append("\",");
-				builder.append("\"userURL\":\"").append(userURL).append("\"");
-			// }
+			buff = this.registerAccount(userId, password, userURL);
+			builder.append(buff);
 			break;
 		case "addRequest":
-			userId = request.getParameter("userId");
-			userURL = request.getParameter("userURL");
+			// userId = request.getParameter("userId");
+			// userURL = request.getParameter("userURL");
 			roomId = request.getParameter("roomId");
 			String requestMessage = request.getParameter("requestMessage");
-			// this.addRequest(questName, roomName);
-			builder.append("\"userId\":\"").append(userId).append("\",");
-			builder.append("\"userURL\":\"").append(userId).append("\",");
-			builder.append("\"requestMessage\":\"").append(userURL).append("\"");
+			buff = this.addRequest(roomId, requestMessage);
+			builder.append(buff);
+			// builder.append("\"userId\":\"").append(userId).append("\",");
+			// builder.append("\"userURL\":\"").append(userId).append("\",");
+			// builder.append("\"requestMessage\":\"").append(userURL).append("\"");
 			break;
 		case "getRequest":
 			roomId = request.getParameter("roomId");
-			// this.getRoomInf();
-			builder.append("\"userId\":\"").append(userId).append("\",");
-			builder.append("\"userURL\":\"").append(userId).append("\",");
-			builder.append("\"requestMessage\":\"").append(userURL).append("\"");
+			buff = this.getRoomInf(roomId);
+			builder.append(buff);
 			break;
+		case "getRoomList":
+			userId = request.getParameter("userId");
+			buff = this.getRoomList(userId);
+			builder.append(buff);
 		case "createRoom":
 			roomId = request.getParameter("roomId");
 			userId = request.getParameter("userId");
-			builder.append("\"roomId\":\"").append(roomId).append("\"");
+			buff = addRoom(roomId);
+			builder.append(buff);
+			// builder.append("\"roomId\":\"").append(roomId).append("\"");
 			break;
 		case "joinRoom":
 			roomId = request.getParameter("roomId");
 			userId = request.getParameter("userId");
-			builder.append("\"roomId\":\"").append(roomId).append("\"");
+			buff = joinRoom(roomId);
+			builder.append(buff);
+			// builder.append("\"roomId\":\"").append(roomId).append("\"");
 			break;
 		default:
 			break;
@@ -116,13 +119,8 @@ public class MainServlet extends HttpServlet {
 	 * @param pass パスワード
 	 * @return ログインが行われていれば true を返す
 	 */
-	protected boolean login(String id, String pass) {
-		// 認証を行う
-		if (dbm.admit(id, pass)) {
-			// 認証が通れば if 文内を実行
-			return true;
-		}
-		return false;
+	protected String login(String id, String pass) {
+		return dbm.admit(id, pass);
 	}
 
 	/**
@@ -133,71 +131,60 @@ public class MainServlet extends HttpServlet {
 	 * @param multiURL マルチURL
 	 * @return アカウントの登録ができれば true を返す
 	 */
-	protected boolean isRegistered(String id, String pass, String multiURL) {
+	protected String registerAccount(String id, String pass, String multiURL) {
 		// 既に存在するIDでなければ，アカウントをデータベースに追加する
 		if (!dbm.isExistingID(id)) {
-			dbm.addAccount(id, pass, multiURL);
-			return true;
+			return addAccount(id, pass, multiURL);
 		} else {
-			System.out.println("既にアカウントが存在します。");
-			return false;
+			return "";
 		}
 	}
 
 	/**
 	 * ルーム一覧を表示するためのメソッド
 	 *
+	 * @param userId ユーザID
 	 */
-	protected void getRoomList() {
-		// buffer 使って roomList のルーム名を全て追加していく
+	protected String getRoomList(String userId) {
+		return dbm.getRoomList(userId);
 	}
 
 	/**
 	 * ルームの追加を行うメソッド
 	 *
-	 * @param roomName ルーム名
+	 * @param roomId ルームID
 	 */
-	protected void addRoom(String roomName) {
-		dbm.addRoom(roomName);
+	protected String addRoom(String roomId) {
+		return dbm.addRoom(roomId);
 	}
 
 	/**
 	 * ルームの情報を表示させるためのメソッド
 	 * (クエストの募集一覧の表示など)
 	 * 
+	 * @param roomId ルームID
 	 */
-	protected void getRoomInf() {
-
-		dbm.getRoomInf();
+	protected String getRoomInf(String roomId) {
+		return dbm.getRoomInf();
 	}
 
 	/**
 	 * ルームに参加するためのメソッド
 	 * ( Room クラスの userList にユーザを追加する)
 	 *
-	 * @param roomName ルーム名
+	 * @param roomId ルームID
 	 */
-	protected void joinRoom(String roomName) {
-		dbm.joinRoom(roomName);
-	}
-
-	/**
-	 * room.html でのクエスト募集の一覧で、クエスト名で絞り込みを行うためのメソッド
-	 *
-	 * @param questName クエスト名
-	 */
-	protected void narrowByQuest(String questName) {
-		dbm.narrowByQuest(questName);
+	protected String joinRoom(String roomId) {
+		return dbm.joinRoom(roomId);
 	}
 
 	/**
 	 * クエスト募集を追加するメソッド
 	 *
+	 * @param roomId ルームID
 	 * @param requestMessage 募集文
-	 * @param roomName ルーム名
-	 * @param userId ユーザID
 	 */
-	protected void addRequest(String requestMessage, String roomName) {
-		dbm.addRequest(requestMessage, roomName);
+	protected String addRequest(String roomId, String requestMessage) {
+		return dbm.addRequest(requestMessage, roomId);
 	}
 }
