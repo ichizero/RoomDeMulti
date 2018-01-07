@@ -1,6 +1,7 @@
 package b09.roomdemulti;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,45 +36,77 @@ public class MainServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String func = request.getParameter("func");
 
-		String userId;
-		String password;
-		String userURL;
+		StringBuilder builder = new StringBuilder();
+		builder.append('{');
+
+		// ユーザID
+		String userId = null;
+		// パスワード
+		String password = null;
+		// ユーザのマルチURL
+		String userURL = null;
+		// ルームID
+		String roomId = null;
+
+		// func によって処理を変える
 		switch(func) {
+		case "auth":
+			userId = request.getParameter("userId");
+			password = request.getParameter("password");
+			// if (this.login(userId, password)) {
+				builder.append("\"userId\":\"").append(userId).append("\",");
+				builder.append("\"userURL\":\"").append(userURL).append("\"");
+			// }
+			break;
 		case "regi":
 			userId = request.getParameter("userId");
 			password = request.getParameter("password");
 			userURL = request.getParameter("userURL");
-			this.newAccount(userId, password, userURL);
-			break;
-		case "auth":
-			userId = request.getParameter("userId");
-			password = request.getParameter("password");
-			this.login(userId, password);
-			break;
-		case "getRequest":
-			this.getRoomInf();
+			// if (this.isRegistered(userId, password, userURL)) {
+				builder.append("\"userId\":\"").append(userId).append("\",");
+				builder.append("\"userURL\":\"").append(userURL).append("\"");
+			// }
 			break;
 		case "addRequest":
-			String requestMessage = request.getParameter("requestMessage");
-			String roomName = request.getParameter("roomName");
 			userId = request.getParameter("userId");
-			this.addRequest(questName, roomName);
+			userURL = request.getParameter("userURL");
+			roomId = request.getParameter("roomId");
+			String requestMessage = request.getParameter("requestMessage");
+			// this.addRequest(questName, roomName);
+			builder.append("\"userId\":\"").append(userId).append("\",");
+			builder.append("\"userURL\":\"").append(userId).append("\",");
+			builder.append("\"requestMessage\":\"").append(userURL).append("\"");
+			break;
+		case "getRequest":
+			roomId = request.getParameter("roomId");
+			// this.getRoomInf();
+			builder.append("\"userId\":\"").append(userId).append("\",");
+			builder.append("\"userURL\":\"").append(userId).append("\",");
+			builder.append("\"requestMessage\":\"").append(userURL).append("\"");
+			break;
+		case "createRoom":
+			roomId = request.getParameter("roomId");
+			userId = request.getParameter("userId");
+			builder.append("\"roomId\":\"").append(roomId).append("\"");
+			break;
+		case "joinRoom":
+			roomId = request.getParameter("roomId");
+			userId = request.getParameter("userId");
+			builder.append("\"roomId\":\"").append(roomId).append("\"");
 			break;
 		default:
 			break;
 		}
-		
-		// StringBuilder builder = new StringBuilder();
-		// builder.append('{');
+
 		// builder.append("\"integer\":\"").append(integer).append("\",");
 		// builder.append("\"digit\":\"").append(String.valueOf(digit)).append("\"");
-		// builder.append('}');
-		// String json = builder.toString();
-		// System.out.println(json);
-		// response.setContentType("application/json");
-		// PrintWriter writer = response.getWriter();
-		// writer.append(json);
-		// writer.flush();
+		builder.append('}');
+		String json = builder.toString();
+		System.out.println(json);
+		response.setContentType("application/json");
+		PrintWriter writer = response.getWriter();
+		writer.append(json);
+		writer.flush();
 	}
 
 	/**
@@ -81,12 +114,15 @@ public class MainServlet extends HttpServlet {
 	 *
 	 * @param id ユーザID
 	 * @param pass パスワード
+	 * @return ログインが行われていれば true を返す
 	 */
-	protected void login(String id, String pass) {
+	protected boolean login(String id, String pass) {
 		// 認証を行う
 		if (dbm.admit(id, pass)) {
 			// 認証が通れば if 文内を実行
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -95,13 +131,16 @@ public class MainServlet extends HttpServlet {
 	 * @param id ユーザID
 	 * @param pass パスワード
 	 * @param multiURL マルチURL
+	 * @return アカウントの登録ができれば true を返す
 	 */
-	protected void newAccount(String id, String pass, String multiURL) {
+	protected boolean isRegistered(String id, String pass, String multiURL) {
 		// 既に存在するIDでなければ，アカウントをデータベースに追加する
 		if (!dbm.isExistingID(id)) {
 			dbm.addAccount(id, pass, multiURL);
+			return true;
 		} else {
 			System.out.println("既にアカウントが存在します。");
+			return false;
 		}
 	}
 
@@ -128,6 +167,7 @@ public class MainServlet extends HttpServlet {
 	 * 
 	 */
 	protected void getRoomInf() {
+
 		dbm.getRoomInf();
 	}
 

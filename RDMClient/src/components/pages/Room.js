@@ -36,6 +36,8 @@ class Room extends React.Component {
     super(props);
     this.state = ({
       isAuthenticated: props.isAuthenticated,
+      cookies: props.cookies,
+      roomId: '419',
       openDialog: false,
       requestList: [
         {
@@ -79,6 +81,10 @@ class Room extends React.Component {
     // this.getRequestList()
     //   .then(res => this.setState({ requestList: res.body }))
     //   .catch(err => console.log("Error: %s", err.message));
+    this.setState({
+      userId: this.state.cookies.get('userId'),
+      userURL: this.state.cookies.get('userURL'),
+    });
   }
 
 
@@ -86,10 +92,10 @@ class Room extends React.Component {
    * リクエストリストをサーバーに要求する
    * @return Promiseを返す
    */
-  getRequestList() {
+  getRequestList(roomId) {
     return request.post("/api")
       .set('Content-Type', 'application/json')
-      .send({ func: "getRequest" });
+      .send({ func: "getRequest", roomId });
   }
 
   /**
@@ -97,10 +103,10 @@ class Room extends React.Component {
    * @param requestMessage 募集文
    * @return Promiseを返す
    */
-  sendRequest(requestMessage) {
+  sendRequest(userId, userURL, roomId, requestMessage) {
     return request.post("/api")
       .set('Content-Type', 'application/json')
-      .send({ func: "addRequest", requestMessage });
+      .send({ func: "addRequest", userId, userURL, roomId, requestMessage });
   }
 
   /**
@@ -110,7 +116,8 @@ class Room extends React.Component {
     e.preventDefault();
 
     // if (this.state.requestMessage != "") {
-    //   this.sendRequest(this.state.requestMessage)
+    //   this.sendRequest(this.state.userId, this.state.userURL,
+    //     this.state.roomId, this.state.requestMessage)
     //     .then(res => this.setState({ requestList: res.body }))
     //     .catch(err => console.log("Error: %s", err.message));
     // }
@@ -135,7 +142,7 @@ class Room extends React.Component {
   onRefreshList(e) {
     e.preventDefault();
 
-    // this.getRequestList()
+    // this.getRequestList(this.state.roomId)
     //   .then(res => this.setState({ requestList: res.body }))
     //   .catch(err => console.log("Error: %s", err.message));
   }

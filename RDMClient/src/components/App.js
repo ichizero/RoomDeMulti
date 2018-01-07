@@ -143,8 +143,8 @@ class App extends React.Component {
                 props => <Login isAuthenticated={this.state.isAuthenticated} onAuthUser={this.onAuthUser} onRegisterUser={this.onRegisterUser} />
               }
             />
-            <Route path="/user" render={props => <User isAuthenticated={this.state.isAuthenticated} />} />
-            <Route path="/room" render={props => <Room isAuthenticated={this.state.isAuthenticated} />} />
+            <Route path="/user" render={props => <User isAuthenticated={this.state.isAuthenticated} cookies={this.state.cookies} />} />
+            <Route path="/room" render={props => <Room isAuthenticated={this.state.isAuthenticated} cookies={this.state.cookies} />} />
             <Route component={NotFound} />
           </Switch>
         </main>
