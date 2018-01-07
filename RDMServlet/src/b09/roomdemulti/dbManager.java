@@ -217,10 +217,11 @@ public class dbManager {
 	/**
 	 * クエスト募集を追加するメソッド
 	 *
-	 * @param questName クエスト名
+	 * @param requestMessage 募集文
 	 * @param roomName ルーム名
+	 * @param userId ユーザID
 	 */
-	public void addRequest(String questName,String roomName) {
+	protected void addRequest(String requestMessage, String roomName, String userID) {
 		
 	}
 

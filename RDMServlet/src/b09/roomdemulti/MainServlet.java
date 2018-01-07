@@ -34,8 +34,47 @@ public class MainServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-		System.out.println("test");
+		String func = request.getParameter("func");
+
+		String userId;
+		String password;
+		String userURL;
+		switch(func) {
+		case "regi":
+			userId = request.getParameter("userId");
+			password = request.getParameter("password");
+			userURL = request.getParameter("userURL");
+			this.newAccount(userId, password, userURL);
+			break;
+		case "auth":
+			userId = request.getParameter("userId");
+			password = request.getParameter("password");
+			this.login(userId, password);
+			break;
+		case "getRequest":
+			this.getRoomInf();
+			break;
+		case "addRequest":
+			String requestMessage = request.getParameter("requestMessage");
+			String roomName = request.getParameter("roomName");
+			userId = request.getParameter("userId");
+			this.addRequest(questName, roomName);
+			break;
+		default:
+			break;
+		}
+		
+		// StringBuilder builder = new StringBuilder();
+		// builder.append('{');
+		// builder.append("\"integer\":\"").append(integer).append("\",");
+		// builder.append("\"digit\":\"").append(String.valueOf(digit)).append("\"");
+		// builder.append('}');
+		// String json = builder.toString();
+		// System.out.println(json);
+		// response.setContentType("application/json");
+		// PrintWriter writer = response.getWriter();
+		// writer.append(json);
+		// writer.flush();
 	}
 
 	/**
@@ -93,8 +132,9 @@ public class MainServlet extends HttpServlet {
 	}
 
 	/**
-	 * ???
-	 *
+	 * ルームの情報を表示させるためのメソッド
+	 * (クエストの募集一覧の表示など)
+	 * 
 	 */
 	protected void getRoomInf() {
 		dbm.getRoomInf();
@@ -122,10 +162,11 @@ public class MainServlet extends HttpServlet {
 	/**
 	 * クエスト募集を追加するメソッド
 	 *
-	 * @param questName クエスト名
+	 * @param requestMessage 募集文
 	 * @param roomName ルーム名
+	 * @param userId ユーザID
 	 */
-	protected void addRequest(String questName,String roomName) {
-		dbm.addRequest(questName,roomName);
+	protected void addRequest(String requestMessage, String roomName, String userID) {
+		dbm.addRequest(requestMessage, roomName, userID);
 	}
 }
