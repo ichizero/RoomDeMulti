@@ -19,6 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 public class DemoServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private String tmpReqList = "{\"request\": \"イザナミ行こー！\", \"url\": \"#1\"}, {\"request\": \"マルチしよー！\", \"url\": \"#2\"}";
+	private String tmpRoomList = "{\"roomId\": \"ルーム1\"}, {\"roomId\": \"るーむ2\"}";
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -41,43 +44,30 @@ public class DemoServlet extends HttpServlet {
 	}
 
 	protected String branchProcessing(String func, HttpServletRequest request) {
-		String userId = "";
-		String password = "";
-		String userURL = "";
-		String roomId = "";
-		String requestMessage = "";
+		String userId = request.getParameter("userId");
+		String password = request.getParameter("password");
+		String userURL = request.getParameter("userURL");
+		String roomId = request.getParameter("roomId");
+		String requestMessage = request.getParameter("requestMessage");
 
 		switch (func) {
 		case "authenticateUser":
-			userId = request.getParameter("userId");
-			password = request.getParameter("password");
 			return "{ \"userId\": \"" + userId + "\", \"userURL\": " + "\"#oragon\"" + " }";
 		case "registerUser":
-			userId = request.getParameter("userId");
-			password = request.getParameter("password");
-			userURL = request.getParameter("userURL");
 			return "{ \"userId\": \"" + userId + "\", \"userURL\": \"" + userURL + "\" }";
 		case "addRequest":
-			userId = request.getParameter("userId");
-			userURL = request.getParameter("userURL");
-			roomId = request.getParameter("roomId");
-			requestMessage = request.getParameter("requestMessage");
-			return "{ \"requestList\": " + "[{\"request\": \"" + requestMessage + "\", \"url\": \"" + userURL + "\"}]" + " }";
+			tmpReqList += ", {\"request\": \"" + requestMessage + "\", \"url\": \"" + userURL + "\"}";
+			return "{ \"requestList\": " + "[" + tmpReqList + "]" + " }";
 		case "getRequest":
-			roomId = request.getParameter("roomId");
-			return "{ \"requestList\": " + "[{\"request\": \"イザナミ行こー！\", \"url\": \"#1\"}, {\"request\": \"マルチしよー！\", \"url\": \"#2\"}]"
-					+ " }";
+			return "{ \"requestList\": " + "[" + tmpReqList + "]" + " }";
 		case "getRoomList":
-			userId = request.getParameter("userId");
-			return "{ \"roomList\": " + "[{\"roomId\": \"ルーム1\"}, {\"roomId\": \"るーむ2\"}]" + " }";
+			return "{ \"roomList\": " + "[" + tmpRoomList + "]" + " }";
 		case "createRoom":
-			roomId = request.getParameter("roomId");
-			userId = request.getParameter("userId");
-			return "{ \"roomList\": " + "[{\"roomId\": \"" + roomId + "\"}]" + " }";
+			tmpRoomList += ", {\"roomId\": \"" + roomId + "\"}";
+			return "{ \"roomList\": " + "[" + tmpRoomList + "]" + " }";
 		case "joinRoom":
-			roomId = request.getParameter("roomId");
-			userId = request.getParameter("userId");
-			return "{ \"roomList\": " + "[{\"roomId\": \"" + roomId + "\"}]" + " }";
+			tmpRoomList += ", {\"roomId\": \"" + roomId + "\"}";
+			return "{ \"roomList\": " + "[" + tmpRoomList + "]" + " }";
 		default:
 			return "error";
 		}

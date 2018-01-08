@@ -37,16 +37,7 @@ class RoomList extends React.Component {
       isOpenJoinDialog: false,
       roomList: [
         {
-          roomId: "るーむ",
-        },
-        {
-          roomId: "るーむ2",
-        },
-        {
-          roomId: "るーむ3",
-        },
-        {
-          roomId: "るーむ419",
+          roomId: " ",
         },
       ],
       roomId: "",
@@ -54,6 +45,7 @@ class RoomList extends React.Component {
     });
 
     this.onCreateRoom = this.onCreateRoom.bind(this);
+    this.onJoinRoom = this.onJoinRoom.bind(this);
     this.onOpenCreateDialog = this.onOpenCreateDialog.bind(this);
     this.onCloseCreateDialog = this.onCloseCreateDialog.bind(this);
     this.onOpenJoinDialog = this.onOpenJoinDialog.bind(this);
@@ -203,11 +195,9 @@ class RoomList extends React.Component {
               <List>
                 {this.state.roomList.map((index) => {
                   return (
-                    <div>
-                      <ListItem button divider component="a" href={"/room/" + index.roomId} key={index.roomId} >
-                        <ListItemText primary={index.roomId} />
-                      </ListItem>
-                    </div>
+                    <ListItem button divider component="a" href={"/room/" + index.roomId} key={index.roomId} >
+                      <ListItemText primary={index.roomId} />
+                    </ListItem>
                   );
                 })}
               </List>

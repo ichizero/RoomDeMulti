@@ -42,28 +42,8 @@ class Room extends React.Component {
       openDialog: false,
       requestList: [
         {
-          request: "イザナミ",
-          url: "#1",
-        },
-        {
-          request: "ヤマタケ",
-          url: "#11",
-        },
-        {
-          request: "クイバタ",
-          url: "#22",
-        },
-        {
-          request: "38階",
-          url: "#33",
-        },
-        {
-          request: "顔合わせ",
-          url: "#333",
-        },
-        {
-          request: "うぇーいｗｗｗ",
-          url: "#444",
+          request: " ",
+          url: " ",
         },
       ],
       requestMessage: "",
@@ -201,11 +181,9 @@ class Room extends React.Component {
               <List>
                 {this.state.requestList.map((index) => {
                   return (
-                    <div>
-                      <ListItem button divider component="a" href={index.url} key={index.url}>
-                        <ListItemText primary={index.request} />
-                      </ListItem>
-                    </div>
+                    <ListItem button divider component="a" href={index.url} key={index.url}>
+                      <ListItemText primary={index.request} />
+                    </ListItem>
                   );
                 })}
               </List>
