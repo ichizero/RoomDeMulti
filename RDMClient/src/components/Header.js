@@ -8,8 +8,6 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
-import IconButton from 'material-ui/IconButton';
-import MenuIcon from 'material-ui-icons/Menu';
 
 
 const styles = {
@@ -19,11 +17,8 @@ const styles = {
   flex: {
     flex: 1,
   },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20,
-  },
 };
+
 
 /**
  * ヘッダーを扱う
@@ -31,11 +26,10 @@ const styles = {
 class Header extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isAuthenticated: props.isAuthenticated,
-    };
 
-    this.onLogoutUser = this.onLogoutUser.bind(this);
+    this.state = { isAuthenticated: props.isAuthenticated };
+
+    this.onLogout = this.onLogout.bind(this);
   }
 
   /**
@@ -51,9 +45,10 @@ class Header extends React.Component {
   /**
    * ログアウト処理を行う
    */
-  onLogoutUser(e) {
+  onLogout(e) {
     e.preventDefault();
-    this.props.onLogoutUser();
+
+    this.props.onLogout();
     this.props.history.push('/');
   }
 
@@ -68,14 +63,13 @@ class Header extends React.Component {
       <div className={classes.root}>
         <AppBar position="static">
           <Toolbar>
-            {/* <IconButton className={classes.menuButton} color="contrast" aria-label="Menu">
-              <MenuIcon />
-            </IconButton> */}
             <Typography type="title" color="inherit" className={classes.flex}>
-              <Link to="/" style={{color: "white", textDecoration: "none"}}>ルームDEマルチ！</Link>
+              <Link to="/" style={{ color: "white", textDecoration: "none" }}>
+                ルームDEマルチ！
+              </Link>
             </Typography>
             {isAuthenticated && (
-              <Button raised color="accent" onClick={this.onLogoutUser} >ログアウト</Button>
+              <Button raised color="accent" onClick={this.onLogout} >ログアウト</Button>
             )}
           </Toolbar>
         </AppBar>

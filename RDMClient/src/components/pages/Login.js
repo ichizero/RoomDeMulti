@@ -10,7 +10,6 @@ import Button from 'material-ui/Button';
 import Dialog, {
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
 } from 'material-ui/Dialog';
 
@@ -24,50 +23,54 @@ const styles = {
   },
 };
 
+
 /**
  * ログイン画面を扱う
  */
 class Login extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = ({
       userId: "", password: "",
       newUserId: "", newPassword: "", newUserURL: "",
       isAuthenticated: props.isAuthenticated,
-      openDialog: false,
+      isOpenDialog: false,
     });
 
-    this.onAuthUser = this.onAuthUser.bind(this);
+    this.onOpenDialog = this.onOpenDialog.bind(this);
+    this.onCloseDialog = this.onCloseDialog.bind(this);
     this.onRegisterUser = this.onRegisterUser.bind(this);
-    this.handleClickOpen = this.handleClickOpen.bind(this);
-    this.handleClose = this.handleClose.bind(this);
+    this.onAuthenticateUser = this.onAuthenticateUser.bind(this);
   }
-
+  
+  /**
+   * コンポーネントがpropsを受け取る時
+   * @param nextProps 受け取るprops
+   */
   componentWillReceiveProps(nextProps) {
     if (this.props.isAuthenticated != nextProps.isAuthenticated) {
       this.setState({ isAuthenticated: nextProps.isAuthenticated });
     }
   }
 
-  handleClickOpen() {
-    this.setState({ openDialog: true });
+  /**
+   * ダイアログを開く
+   */
+  onOpenDialog() {
+    this.setState({ isOpenDialog: true });
   }
 
-  handleClose() {
-    this.setState({ openDialog: false });
+  /**
+   * ダイアログを閉じる
+   */
+  onCloseDialog() {
+    this.setState({ isOpenDialog: false });
   }
 
-  onAuthUser(e) {
-    e.preventDefault();
-
-    const userId = this.state.userId;
-    const password = this.state.password;
-
-    if (userId !== "" && password !== "") {
-      this.props.onAuthUser(userId, password);
-    }
-  }
-
+  /**
+   * 新規登録を行う
+   */
   onRegisterUser(e) {
     e.preventDefault();
 
@@ -76,10 +79,27 @@ class Login extends React.Component {
     const userURL = this.state.newUserURL;
     if (userId !== "" && password !== "" && userURL !== "") {
       this.props.onRegisterUser(userId, password, userURL);
-      this.handleClose();
+      this.onCloseDialog();
     }
   }
 
+  /**
+   * ユーザ認証を行う
+   */
+  onAuthenticateUser(e) {
+    e.preventDefault();
+
+    const userId = this.state.userId;
+    const password = this.state.password;
+
+    if (userId !== "" && password !== "") {
+      this.props.onAuthenticateUser(userId, password);
+    }
+  }
+
+  /**
+   * render
+   */
   render() {
     const { classes } = this.props;
 
@@ -111,16 +131,16 @@ class Login extends React.Component {
               </form>
             </Grid>
             <Grid item xs={6} className={classes.tacenter}>
-              <Button raised color="primary" onClick={this.onAuthUser}>ログイン</Button>
+              <Button raised color="primary" onClick={this.onAuthenticateUser}>ログイン</Button>
             </Grid>
             <Grid item xs={6} className={classes.tacenter}>
-              <Button raised color="accent" onClick={this.handleClickOpen}>新規登録</Button>
+              <Button raised color="accent" onClick={this.onOpenDialog}>新規登録</Button>
             </Grid>
 
             <div className="requestDialog">
               <Dialog
-                open={this.state.openDialog}
-                onClose={this.handleClose}
+                open={this.state.isOpenDialog}
+                onClose={this.onCloseDialog}
                 aria-labelledby="form-dialog-title"
               >
                 <DialogTitle id="form-dialog-title">新規登録</DialogTitle>
@@ -152,11 +172,11 @@ class Login extends React.Component {
                   />
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={this.handleClose} color="primary">
+                  <Button onClick={this.onCloseDialog} color="primary">
                     キャンセル
                   </Button>
                   <Button onClick={this.onRegisterUser} color="primary">
-                    募集
+                    登録
                   </Button>
                 </DialogActions>
               </Dialog>

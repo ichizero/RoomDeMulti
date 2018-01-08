@@ -18,20 +18,23 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import Typography from 'material-ui/Typography';
 
+
 const styles = {
   root: {
     flexGrow: 1,
   },
 };
 
+
 class RoomList extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = ({
       isAuthenticated: props.isAuthenticated,
       cookies: props.cookies,
-      openDialog: false,
-      openDialog2: false,
+      isOpenCreateDialog: false,
+      isOpenJoinDialog: false,
       roomList: [
         {
           roomId: "るーむ",
@@ -50,14 +53,15 @@ class RoomList extends React.Component {
           userURL: "/419",
         },
       ],
-      roomName: "",
+      roomId: "",
+      newRoomId: "",
     });
 
     this.onCreateRoom = this.onCreateRoom.bind(this);
-    this.onDialogOpen = this.onDialogOpen.bind(this);
-    this.onDialogClose = this.onDialogClose.bind(this);
-    this.onDialog2Open = this.onDialog2Open.bind(this);
-    this.onDialog2Close = this.onDialog2Close.bind(this);
+    this.onOpenCreateDialog = this.onOpenCreateDialog.bind(this);
+    this.onCloseCreateDialog = this.onCloseCreateDialog.bind(this);
+    this.onOpenJoinDialog = this.onOpenJoinDialog.bind(this);
+    this.onCloseJoinDialog = this.onCloseJoinDialog.bind(this);
   }
 
   /**
@@ -67,11 +71,23 @@ class RoomList extends React.Component {
     this.setState({
       userId: this.state.cookies.get('userId'),
     });
-    // this.getRoomList(this.state.userId)
-    //   .then(res => this.setState({ roomList: res.body }))
-    //   .catch(err => console.log("Error: %s", err.message));
+
+    this.getRoomList(this.state.userId)
+      .then(res => this.setState({ roomList: res.body.roomList }))
+      .catch(err => console.log("Error: %s", err.message));
   }
 
+  /**
+   * コンポーネントがpropsを受け取る時
+   * @param nextProps 受け取るprops
+   */
+  componentWillReceiveProps(nextProps) {
+    if (this.props.isAuthenticated != nextProps.isAuthenticated) {
+      this.setState({ isAuthenticated: nextProps.isAuthenticated });
+    } else if (this.props.cookies != nextProps.cookies) {
+      this.setState({ cookies: nextProps.cookies });
+    }
+  }
 
   /**
    * ルームリストをサーバーに要求する
@@ -81,18 +97,6 @@ class RoomList extends React.Component {
     return request.post("/api")
       .set('Content-Type', 'application/json')
       .send({ func: "getRoomList", userId });
-  }
-
-  /**
-   * サーバーにルーム名をPOST送信する
-   * @param roomId ルーム名
-   * @param userId ユーザ名
-   * @return Promiseを返す
-   */
-  createRoom(roomId, userId) {
-    return request.post("/api")
-      .set('Content-Type', 'application/json')
-      .send({ func: "createRoom", roomId, userId });
   }
 
   /**
@@ -113,14 +117,18 @@ class RoomList extends React.Component {
   onCreateRoom(e) {
     e.preventDefault();
 
-    // if (this.state.roomName != "") {
-    //   this.createRoom(this.state.roomName)
-    //     .then(res => this.setState({ roomList: res.body }))
-    //     .catch(err => console.log("Error: %s", err.message));
-    // }
+    const roomId = this.state.newRoomId;
+    const userId = this.state.userId;
 
-    // this.getRoomList(this.state.userId);
-    this.onDialogClose();
+    if (roomId != "") {
+      request.post("/api")
+        .set('Content-Type', 'application/json')
+        .send({ func: "createRoom", roomId, userId })
+        .then(res => this.setState({ roomList: res.body.roomList }))
+        .catch(err => console.log("Error: %s", err.message));
+    }
+
+    this.onCloseCreateDialog();
   }
 
   /**
@@ -129,46 +137,47 @@ class RoomList extends React.Component {
   onJoinRoom(e) {
     e.preventDefault();
 
-    // if (this.state.roomName != "") {
-    //   this.joinRoom(this.state.roomName)
-    //     .then(res => this.setState({ roomList: res.body }))
-    //     .catch(err => console.log("Error: %s", err.message));
-    // }
+    const roomId = this.state.roomId;
+    const userId = this.state.userId;
 
-    this.onDialog2Close();
+    if (this.state.roomId != "") {
+      request.post("/api")
+        .set('Content-Type', 'application/json')
+        .send({ func: "joinRoom", roomId, userId })
+        .then(res => this.setState({ roomList: res.body.roomList }))
+        .catch(err => console.log("Error: %s", err.message));
+    }
+
+    this.onCloseJoinDialog();
   }
-
-
 
   /**
    * ルーム作成ダイアログを表示する
    */
-  onDialogOpen() {
-    this.setState({ openDialog: true });
+  onOpenCreateDialog() {
+    this.setState({ isOpenCreateDialog: true });
   }
 
   /**
    * ルーム作成ダイアログを閉じる
    */
-  onDialogClose() {
-    this.setState({ openDialog: false });
+  onCloseCreateDialog() {
+    this.setState({ isOpenCreateDialog: false });
   }
-
 
   /**
    * ルーム参加ダイアログを表示する
    */
-  onDialog2Open() {
-    this.setState({ openDialog2: true });
+  onOpenJoinDialog() {
+    this.setState({ isOpenJoinDialog: true });
   }
 
   /**
    * ルーム参加ダイアログを閉じる
    */
-  onDialog2Close() {
-    this.setState({ openDialog2: false });
+  onCloseJoinDialog() {
+    this.setState({ isOpenJoinDialog: false });
   }
-  
 
   /**
    * render
@@ -184,15 +193,15 @@ class RoomList extends React.Component {
           <Grid container spacing={24} className={classes.root}>
             <Grid item xs={12}>
               <Typography type="display2" gutterBottom>
-                ルーム一覧
+                参加済みルーム
               </Typography>
             </Grid>
 
             <Grid item xs={6}>
-              <Button raised color="primary" onClick={this.onDialogOpen}>ルームを作成する</Button>
+              <Button raised color="primary" onClick={this.onOpenCreateDialog}>新規作成</Button>
             </Grid>
             <Grid item xs={6}>
-              <Button raised color="primary" onClick={this.onDialog2Open}>ルームに参加する</Button>
+              <Button raised color="primary" onClick={this.onOpenJoinDialog}>ルーム参加</Button>
             </Grid>
 
             <Grid item xs={12}>
@@ -212,8 +221,8 @@ class RoomList extends React.Component {
 
             <div className="createRoomDialog">
               <Dialog
-                open={this.state.openDialog}
-                onClose={this.onDialogClose}
+                open={this.state.isOpenCreateDialog}
+                onClose={this.onCloseCreateDialog}
                 aria-labelledby="form-dialog-title"
               >
                 <DialogTitle id="form-dialog-title">ルームを作成する</DialogTitle>
@@ -224,16 +233,16 @@ class RoomList extends React.Component {
                   <TextField
                     autoFocus
                     margin="dense"
-                    id="roomName"
+                    id="newRoomId"
                     label="ルーム名"
                     type="text"
                     fullWidth
-                    value={this.state.roomName}
-                    onChange={(e) => this.setState({ roomName: e.target.value })}
+                    value={this.state.newRoomId}
+                    onChange={(e) => this.setState({ newRoomId: e.target.value })}
                   />
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={this.onDialogClose} color="primary">
+                  <Button onClick={this.onCloseCreateDialog} color="primary">
                     キャンセル
                   </Button>
                   <Button onClick={this.onCreateRoom} color="primary">
@@ -245,8 +254,8 @@ class RoomList extends React.Component {
 
             <div className="joinRoomDialog">
               <Dialog
-                open={this.state.openDialog2}
-                onClose={this.onDialog2Close}
+                open={this.state.isOpenJoinDialog}
+                onClose={this.onCloseJoinDialog}
                 aria-labelledby="form-dialog2-title"
               >
                 <DialogTitle id="form-dialog2-title">ルームに参加する</DialogTitle>
@@ -257,16 +266,16 @@ class RoomList extends React.Component {
                   <TextField
                     autoFocus
                     margin="dense"
-                    id="roomName2"
+                    id="roomId"
                     label="ルーム名"
                     type="text"
                     fullWidth
-                    value={this.state.roomName}
-                    onChange={(e) => this.setState({ roomName: e.target.value })}
+                    value={this.state.roomId}
+                    onChange={(e) => this.setState({ roomId: e.target.value })}
                   />
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={this.onDialog2Close} color="primary">
+                  <Button onClick={this.onCloseJoinDialog} color="primary">
                     キャンセル
                   </Button>
                   <Button onClick={this.onJoinRoom} color="primary">
@@ -280,7 +289,6 @@ class RoomList extends React.Component {
     );
   }
 }
-
 
 
 RoomList.propTypes = {

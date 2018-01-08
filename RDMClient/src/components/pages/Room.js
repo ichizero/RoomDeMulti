@@ -20,6 +20,7 @@ import Typography from 'material-ui/Typography';
 
 import Refresh from 'material-ui-icons/Refresh';
 
+
 const styles = {
   root: {
     flexGrow: 1,
@@ -33,7 +34,7 @@ const styles = {
 class Room extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props.match.params);
+
     this.state = ({
       isAuthenticated: props.isAuthenticated,
       cookies: props.cookies,
@@ -70,23 +71,49 @@ class Room extends React.Component {
 
     this.onAddRequest = this.onAddRequest.bind(this);
     this.onRefreshList = this.onRefreshList.bind(this);
-    this.onDialogOpen = this.onDialogOpen.bind(this);
-    this.onDialogClose = this.onDialogClose.bind(this);
+    this.onOpenDialog = this.onOpenDialog.bind(this);
+    this.onCloseDialog = this.onCloseDialog.bind(this);
   }
 
   /**
    * コンポーネントがマウントされた後に呼び出される
    */
   componentDidMount() {
-    // this.getRequestList()
-    //   .then(res => this.setState({ requestList: res.body }))
-    //   .catch(err => console.log("Error: %s", err.message));
     this.setState({
       userId: this.state.cookies.get('userId'),
       userURL: this.state.cookies.get('userURL'),
     });
+    
+    this.getRequestList(this.state.roomId)
+      .then(res => this.setState({ requestList: res.body.requestList }))
+      .catch(err => console.log("Error: %s", err.message));
   }
 
+  /**
+   * コンポーネントがpropsを受け取る時
+   * @param nextProps 受け取るprops
+   */
+  componentWillReceiveProps(nextProps) {
+    if (this.props.isAuthenticated != nextProps.isAuthenticated) {
+      this.setState({ isAuthenticated: nextProps.isAuthenticated });
+    } else if (this.props.cookies != nextProps.cookies) {
+      this.setState({ cookies: nextProps.cookies });
+    }
+  }
+
+  /**
+   * ダイアログを開く
+   */
+  onOpenDialog() {
+    this.setState({ openDialog: true });
+  }
+
+  /**
+   * ダイアログを閉じる
+   */
+  onCloseDialog() {
+    this.setState({ openDialog: false });
+  }
 
   /**
    * リクエストリストをサーバーに要求する
@@ -99,41 +126,25 @@ class Room extends React.Component {
   }
 
   /**
-   * サーバーに募集文をPOST送信する
-   * @param requestMessage 募集文
-   * @return Promiseを返す
-   */
-  sendRequest(userId, userURL, roomId, requestMessage) {
-    return request.post("/api")
-      .set('Content-Type', 'application/json')
-      .send({ func: "addRequest", userId, userURL, roomId, requestMessage });
-  }
-
-  /**
    * 新規募集を登録する
    */
   onAddRequest(e) {
     e.preventDefault();
 
-    // if (this.state.requestMessage != "") {
-    //   this.sendRequest(this.state.userId, this.state.userURL,
-    //     this.state.roomId, this.state.requestMessage)
-    //     .then(res => this.setState({ requestList: res.body }))
-    //     .catch(err => console.log("Error: %s", err.message));
-    // }
+    const userId = this.state.userId;
+    const userURL = this.state.userURL;
+    const roomId = this.state.roomId;
+    const requestMessage = this.state.requestMessage;
 
-    if (this.state.requestMessage != "") {
-      const list = this.state.requestList;
-      list.unshift({
-        request: this.state.requestMessage,
-        url: "#xxx",
-      });
-      this.setState({ requestList: list, requestMessage: "" });
+    if (requestMessage !== "") {
+      request.post("/api")
+        .set('Content-Type', 'application/json')
+        .send({ func: "addRequest", userId, userURL, roomId, requestMessage })
+        .then(res => this.setState({ requestList: res.body.requestList }))
+        .catch(err => console.log("Error: %s", err.message));
     }
 
-    // 最後にリストを更新
-    // this.getRequestList();
-    this.onDialogClose();
+    this.onCloseDialog();
   }
 
   /**
@@ -142,23 +153,9 @@ class Room extends React.Component {
   onRefreshList(e) {
     e.preventDefault();
 
-    // this.getRequestList(this.state.roomId)
-    //   .then(res => this.setState({ requestList: res.body }))
-    //   .catch(err => console.log("Error: %s", err.message));
-  }
-
-  /**
-   * ダイアログを表示する
-   */
-  onDialogOpen() {
-    this.setState({ openDialog: true });
-  }
-
-  /**
-   * ダイアログを閉じる
-   */
-  onDialogClose() {
-    this.setState({ openDialog: false });
+    this.getRequestList(this.state.roomId)
+      .then(res => this.setState({ requestList: res.body.requestList }))
+      .catch(err => console.log("Error: %s", err.message));
   }
 
   /**
@@ -180,7 +177,7 @@ class Room extends React.Component {
             </Grid>
 
             <Grid item xs={12}>
-              <Button raised color="primary" onClick={this.onDialogOpen}>クエストを募集する</Button>
+              <Button raised color="primary" onClick={this.onOpenDialog}>クエストを募集する</Button>
             </Grid>
             <Grid item xs={12}>
               <Button color="primary" onClick={this.onRefreshList}>
@@ -205,7 +202,7 @@ class Room extends React.Component {
             <div className="requestDialog">
               <Dialog
                 open={this.state.openDialog}
-                onClose={this.onDialogClose}
+                onClose={this.onCloseDialog}
                 aria-labelledby="form-dialog-title"
               >
                 <DialogTitle id="form-dialog-title">クエストを募集する</DialogTitle>
@@ -225,7 +222,7 @@ class Room extends React.Component {
                   />
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={this.onDialogClose} color="primary">
+                  <Button onClick={this.onCloseDialog} color="primary">
                     キャンセル
                   </Button>
                   <Button onClick={this.onAddRequest} color="primary">

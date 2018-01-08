@@ -3,6 +3,9 @@ import React from 'react';
 import Typography from 'material-ui/Typography';
 
 
+/**
+ * 404ページ
+ */
 const NotFound = () => (
   <div>
     <Typography type="display2" gutterBottom>
