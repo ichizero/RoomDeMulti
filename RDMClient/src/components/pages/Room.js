@@ -83,9 +83,12 @@ class Room extends React.Component {
       userId: this.state.cookies.get('userId'),
       userURL: this.state.cookies.get('userURL'),
     });
-    
+
     this.getRequestList(this.state.roomId)
-      .then(res => this.setState({ requestList: res.body.requestList }))
+      .then(res => {
+        const json = JSON.parse(res.text);
+        this.setState({ requestList: json.requestList });
+      })
       .catch(err => console.log("Error: %s", err.message));
   }
 
@@ -121,8 +124,8 @@ class Room extends React.Component {
    */
   getRequestList(roomId) {
     return request.post("/api")
-      .set('Content-Type', 'application/json')
-      .send({ func: "getRequest", roomId });
+      .send('func=getRequest')
+      .send('roomId=' + roomId);
   }
 
   /**
@@ -138,9 +141,15 @@ class Room extends React.Component {
 
     if (requestMessage !== "") {
       request.post("/api")
-        .set('Content-Type', 'application/json')
-        .send({ func: "addRequest", userId, userURL, roomId, requestMessage })
-        .then(res => this.setState({ requestList: res.body.requestList }))
+        .send('func=addRequest')
+        .send('userId=' + userId)
+        .send('userURL=' + userURL)
+        .send('roomId=' + roomId)
+        .send('requestMessage=' + requestMessage)
+        .then(res => {
+          const json = JSON.parse(res.text);
+          this.setState({ requestList: json.requestList });
+        })
         .catch(err => console.log("Error: %s", err.message));
     }
 
@@ -154,7 +163,10 @@ class Room extends React.Component {
     e.preventDefault();
 
     this.getRequestList(this.state.roomId)
-      .then(res => this.setState({ requestList: res.body.requestList }))
+      .then(res => {
+        const json = JSON.parse(res.text);
+        this.setState({ requestList: json.requestList });
+      })
       .catch(err => console.log("Error: %s", err.message));
   }
 

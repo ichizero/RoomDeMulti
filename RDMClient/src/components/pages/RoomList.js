@@ -38,19 +38,15 @@ class RoomList extends React.Component {
       roomList: [
         {
           roomId: "るーむ",
-          userURL: "/tomoya",
         },
         {
           roomId: "るーむ2",
-          userURL: "/mura",
         },
         {
           roomId: "るーむ3",
-          userURL: "/むら",
         },
         {
           roomId: "るーむ419",
-          userURL: "/419",
         },
       ],
       roomId: "",
@@ -73,7 +69,10 @@ class RoomList extends React.Component {
     });
 
     this.getRoomList(this.state.userId)
-      .then(res => this.setState({ roomList: res.body.roomList }))
+      .then(res => {
+        const json = JSON.parse(res.text);
+        this.setState({ roomList: json.roomList });
+      })
       .catch(err => console.log("Error: %s", err.message));
   }
 
@@ -95,20 +94,8 @@ class RoomList extends React.Component {
    */
   getRoomList(userId) {
     return request.post("/api")
-      .set('Content-Type', 'application/json')
-      .send({ func: "getRoomList", userId });
-  }
-
-  /**
-   * サーバーにルーム名をPOST送信する
-   * @param roomId ルーム名
-   * @param userId ユーザ名
-   * @return Promiseを返す
-   */
-  joinRoom(roomId, userId) {
-    return request.post("/api")
-      .set('Content-Type', 'application/json')
-      .send({ func: "joinRoom", roomId, userId });
+      .send('func=getRoomList')
+      .send('userId=' + userId);
   }
 
   /**
@@ -122,9 +109,13 @@ class RoomList extends React.Component {
 
     if (roomId != "") {
       request.post("/api")
-        .set('Content-Type', 'application/json')
-        .send({ func: "createRoom", roomId, userId })
-        .then(res => this.setState({ roomList: res.body.roomList }))
+        .send('func=createRoom')
+        .send('roomId=' + roomId)
+        .send('userId=' + userId)
+        .then(res => {
+          const json = JSON.parse(res.text);
+          this.setState({ roomList: json.roomList });
+        })
         .catch(err => console.log("Error: %s", err.message));
     }
 
@@ -142,9 +133,13 @@ class RoomList extends React.Component {
 
     if (this.state.roomId != "") {
       request.post("/api")
-        .set('Content-Type', 'application/json')
-        .send({ func: "joinRoom", roomId, userId })
-        .then(res => this.setState({ roomList: res.body.roomList }))
+        .send('func=joinRoom')
+        .send('roomId=' + roomId)
+        .send('userId=' + userId)
+        .then(res => {
+          const json = JSON.parse(res.text);
+          this.setState({ roomList: json.roomList });
+        })
         .catch(err => console.log("Error: %s", err.message));
     }
 

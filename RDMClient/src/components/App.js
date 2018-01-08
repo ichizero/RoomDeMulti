@@ -56,11 +56,14 @@ class App extends React.Component {
    */
   onRegisterUser(userId, password, userURL) {
     request.post("/api")
-      .set('Content-Type', 'application/json')
-      .send({ func: "registerUser", userId, password, userURL })
+      .send('func=registerUser')
+      .send('userId=' + userId)
+      .send("password=" + password)
+      .send("userURL=" + userURL)
       .then(res => {
-        this.state.cookies.set('userId', res.body.userId, { path: '/' });
-        this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
+        const json = JSON.parse(res.text);
+        this.state.cookies.set('userId', json.userId, { path: '/' });
+        this.state.cookies.set('userURL', json.userURL, { path: '/' });
         this.setState({ isAuthenticated: true });
       })
       .catch(err => console.log("Error: %s", err.message));
@@ -73,11 +76,13 @@ class App extends React.Component {
    */
   onAuthenticateUser(userId, password) {
     request.post("/api")
-      .set('Content-Type', 'application/json')
-      .send({ func: "authenticateUser", userId, password })
+      .send('func=authenticateUser')
+      .send('userId=' + userId)
+      .send("password=" + password)
       .then(res => {
-        this.state.cookies.set('userId', res.body.userId, { path: '/' });
-        this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
+        const json = JSON.parse(res.text);
+        this.state.cookies.set('userId', json.userId, { path: '/' });
+        this.state.cookies.set('userURL', json.userURL, { path: '/' });
         this.setState({ isAuthenticated: true });
       })
       .catch(err => console.log("Error: %s", err.message));
@@ -138,7 +143,7 @@ class App extends React.Component {
               path="/room/:id"
               render={props =>
                 <Room
-                  isAuthenticated={this.state.isAuthenticated} 
+                  isAuthenticated={this.state.isAuthenticated}
                   cookies={this.state.cookies}
                   {...props}
                 />
