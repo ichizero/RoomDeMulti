@@ -65,10 +65,7 @@ class Room extends React.Component {
     });
 
     this.getRequestList(this.state.roomId)
-      .then(res => {
-        const json = JSON.parse(res.text);
-        this.setState({ requestList: json.requestList });
-      })
+      .then(res => this.setState({ requestList: res.body.requestList }))
       .catch(err => console.log("Error: %s", err.message));
   }
 
@@ -126,10 +123,7 @@ class Room extends React.Component {
         .send('userURL=' + userURL)
         .send('roomId=' + roomId)
         .send('requestMessage=' + requestMessage)
-        .then(res => {
-          const json = JSON.parse(res.text);
-          this.setState({ requestList: json.requestList });
-        })
+        .then(res => this.setState({ requestList: res.body.requestList }))
         .catch(err => console.log("Error: %s", err.message));
     }
 
@@ -143,10 +137,7 @@ class Room extends React.Component {
     e.preventDefault();
 
     this.getRequestList(this.state.roomId)
-      .then(res => {
-        const json = JSON.parse(res.text);
-        this.setState({ requestList: json.requestList });
-      })
+      .then(res => this.setState({ requestList: res.body.requestList }))
       .catch(err => console.log("Error: %s", err.message));
   }
 

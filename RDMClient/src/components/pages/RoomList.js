@@ -61,10 +61,7 @@ class RoomList extends React.Component {
     });
 
     this.getRoomList(this.state.userId)
-      .then(res => {
-        const json = JSON.parse(res.text);
-        this.setState({ roomList: json.roomList });
-      })
+      .then(res => this.setState({ roomList: res.body.roomList }))
       .catch(err => console.log("Error: %s", err.message));
   }
 
@@ -104,10 +101,7 @@ class RoomList extends React.Component {
         .send('func=createRoom')
         .send('roomId=' + roomId)
         .send('userId=' + userId)
-        .then(res => {
-          const json = JSON.parse(res.text);
-          this.setState({ roomList: json.roomList });
-        })
+        .then(res => this.setState({ roomList: res.body.roomList }))
         .catch(err => console.log("Error: %s", err.message));
     }
 
@@ -128,10 +122,7 @@ class RoomList extends React.Component {
         .send('func=joinRoom')
         .send('roomId=' + roomId)
         .send('userId=' + userId)
-        .then(res => {
-          const json = JSON.parse(res.text);
-          this.setState({ roomList: json.roomList });
-        })
+        .then(res => this.setState({ roomList: res.body.roomList }))
         .catch(err => console.log("Error: %s", err.message));
     }
 

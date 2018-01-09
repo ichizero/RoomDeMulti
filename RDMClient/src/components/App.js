@@ -61,9 +61,8 @@ class App extends React.Component {
       .send("password=" + password)
       .send("userURL=" + userURL)
       .then(res => {
-        const json = JSON.parse(res.text);
-        this.state.cookies.set('userId', json.userId, { path: '/' });
-        this.state.cookies.set('userURL', json.userURL, { path: '/' });
+        this.state.cookies.set('userId', res.body.userId, { path: '/' });
+        this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
         this.setState({ isAuthenticated: true });
       })
       .catch(err => console.log("Error: %s", err.message));
@@ -80,9 +79,8 @@ class App extends React.Component {
       .send('userId=' + userId)
       .send("password=" + password)
       .then(res => {
-        const json = JSON.parse(res.text);
-        this.state.cookies.set('userId', json.userId, { path: '/' });
-        this.state.cookies.set('userURL', json.userURL, { path: '/' });
+        this.state.cookies.set('userId', res.body.userId, { path: '/' });
+        this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
         this.setState({ isAuthenticated: true });
       })
       .catch(err => console.log("Error: %s", err.message));
