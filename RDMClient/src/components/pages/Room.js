@@ -93,7 +93,10 @@ class Room extends React.Component {
    * ダイアログを閉じる
    */
   onCloseDialog() {
-    this.setState({ openDialog: false });
+    this.setState({
+      openDialog: false,
+      requestMessage: ""
+    });
   }
 
   /**
@@ -173,7 +176,7 @@ class Room extends React.Component {
               <List>
                 {this.state.requestList.map((index) => {
                   return (
-                    <ListItem button divider component="a" href={index.userURL} key={index}>
+                    <ListItem button divider component="a" href={index.userURL} key={index.userName}>
                       <ListItemText primary={index.userName} />
                       <ListItemText primary={index.requestMessage} />
                     </ListItem>

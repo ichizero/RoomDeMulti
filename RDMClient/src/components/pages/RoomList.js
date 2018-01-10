@@ -93,8 +93,9 @@ class RoomList extends React.Component {
   onCreateRoom(e) {
     e.preventDefault();
 
-    const roomName = this.state.newRoomName;
     const userName = this.state.userName;
+    const roomName = this.state.newRoomName;
+    this.setState({ newRoomName: "" });
 
     if (roomName != "") {
       request.post("/api")
@@ -114,8 +115,8 @@ class RoomList extends React.Component {
   onJoinRoom(e) {
     e.preventDefault();
 
-    const roomName = this.state.roomName;
     const userName = this.state.userName;
+    const roomName = this.state.roomName;
 
     if (this.state.roomName != "") {
       request.post("/api")
@@ -140,7 +141,10 @@ class RoomList extends React.Component {
    * ルーム作成ダイアログを閉じる
    */
   onCloseCreateDialog() {
-    this.setState({ isOpenCreateDialog: false });
+    this.setState({
+      isOpenCreateDialog: false,
+      newRoomName: ""
+    });
   }
 
   /**
@@ -154,7 +158,10 @@ class RoomList extends React.Component {
    * ルーム参加ダイアログを閉じる
    */
   onCloseJoinDialog() {
-    this.setState({ isOpenJoinDialog: false });
+    this.setState({
+      isOpenJoinDialog: false,
+      roomName: ""
+    });
   }
 
   /**
