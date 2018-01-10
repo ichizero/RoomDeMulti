@@ -41,7 +41,7 @@ class App extends React.Component {
    * コンポーネントがマウントされた後に呼び出される
    */
   componentWillMount() {
-    if (this.state.cookies.get('userId') != null) {
+    if (this.state.cookies.get('userName') != null) {
       this.setState({ isAuthenticated: true });
     } else {
       this.setState({ isAuthenticated: false });
@@ -50,18 +50,18 @@ class App extends React.Component {
 
   /**
    * 新規登録を行う
-   * @param userId ユーザ名
+   * @param userName ユーザ名
    * @param password パスワード
    * @param userURL マルチURL
    */
-  onRegisterUser(userId, password, userURL) {
+  onRegisterUser(userName, password, userURL) {
     request.post("/api")
       .send('func=registerUser')
-      .send('userId=' + userId)
+      .send('userName=' + userName)
       .send("password=" + password)
       .send("userURL=" + userURL)
       .then(res => {
-        this.state.cookies.set('userId', res.body.userId, { path: '/' });
+        this.state.cookies.set('userName', res.body.userName, { path: '/' });
         this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
         this.setState({ isAuthenticated: true });
       })
@@ -70,16 +70,16 @@ class App extends React.Component {
 
   /**
    * ユーザ認証を行う
-   * @param userId ユーザ名
+   * @param userName ユーザ名
    * @param password パスワード
    */
-  onAuthenticateUser(userId, password) {
+  onAuthenticateUser(userName, password) {
     request.post("/api")
       .send('func=authenticateUser')
-      .send('userId=' + userId)
+      .send('userName=' + userName)
       .send("password=" + password)
       .then(res => {
-        this.state.cookies.set('userId', res.body.userId, { path: '/' });
+        this.state.cookies.set('userName', res.body.userName, { path: '/' });
         this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
         this.setState({ isAuthenticated: true });
       })
@@ -91,7 +91,7 @@ class App extends React.Component {
    */
   onLogout() {
     if (this.state.isAuthenticated) {
-      this.state.cookies.remove('userId');
+      this.state.cookies.remove('userName');
       this.state.cookies.remove('userURL');
       this.setState({ isAuthenticated: false });
     }

@@ -32,8 +32,8 @@ class Login extends React.Component {
     super(props);
 
     this.state = ({
-      userId: "", password: "",
-      newUserId: "", newPassword: "", newUserURL: "",
+      userName: "", password: "",
+      newUserName: "", newPassword: "", newUserURL: "",
       isAuthenticated: props.isAuthenticated,
       isOpenDialog: false,
     });
@@ -74,11 +74,11 @@ class Login extends React.Component {
   onRegisterUser(e) {
     e.preventDefault();
 
-    const userId = this.state.newUserId;
+    const userName = this.state.newUserName;
     const password = this.state.newPassword;
     const userURL = this.state.newUserURL;
-    if (userId !== "" && password !== "" && userURL !== "") {
-      this.props.onRegisterUser(userId, password, userURL);
+    if (userName !== "" && password !== "" && userURL !== "") {
+      this.props.onRegisterUser(userName, password, userURL);
       this.onCloseDialog();
     }
   }
@@ -89,11 +89,11 @@ class Login extends React.Component {
   onAuthenticateUser(e) {
     e.preventDefault();
 
-    const userId = this.state.userId;
+    const userName = this.state.userName;
     const password = this.state.password;
 
-    if (userId !== "" && password !== "") {
-      this.props.onAuthenticateUser(userId, password);
+    if (userName !== "" && password !== "") {
+      this.props.onAuthenticateUser(userName, password);
     }
   }
 
@@ -112,10 +112,10 @@ class Login extends React.Component {
             <Grid item xs={12}>
               <form>
                 <TextField
-                  id="userId"
-                  label="ユーザID"
-                  value={this.state.userId}
-                  onChange={(e) => this.setState({ userId: e.target.value })}
+                  id="userName"
+                  label="ユーザ名"
+                  value={this.state.userName}
+                  onChange={(e) => this.setState({ userName: e.target.value })}
                   margin="normal"
                   fullWidth
                 />
@@ -146,10 +146,10 @@ class Login extends React.Component {
                 <DialogTitle id="form-dialog-title">新規登録</DialogTitle>
                 <DialogContent>
                   <TextField
-                    id="newUserId"
-                    label="ユーザID"
-                    value={this.state.newUserId}
-                    onChange={(e) => this.setState({ newUserId: e.target.value })}
+                    id="newUserName"
+                    label="ユーザ名"
+                    value={this.state.newUserName}
+                    onChange={(e) => this.setState({ newUserName: e.target.value })}
                     margin="normal"
                     fullWidth
                   />

@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 public class DemoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private String tmpReqList = "{\"request\": \"イザナミ行こー！\", \"url\": \"#1\"}, {\"request\": \"マルチしよー！\", \"url\": \"#2\"}";
-    private String tmpRoomList = "{\"roomId\": \"ルーム1\"}, {\"roomId\": \"るーむ2\"}";
+    private String tmpReqList = "{\"requestMessage\": \"イザナミ行こー！\", \"userName\": \"ゆー\", \"userURL\": \"http://localhost:8080/room#1\"}, {\"requestMessage\": \"マルチしよー！\", \"userName\": \"みー\", \"userURL\": \"http://localhost:8080/room#2\"}";
+    private String tmpRoomList = "{\"roomName\": \"ルーム1\"}, {\"roomName\": \"るーむ2\"}";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -41,29 +41,29 @@ public class DemoServlet extends HttpServlet {
     }
 
     protected String branchProcessing(String func, HttpServletRequest request) {
-        String userId = request.getParameter("userId");
+        String userName = request.getParameter("userName");
         String password = request.getParameter("password");
         String userURL = request.getParameter("userURL");
-        String roomId = request.getParameter("roomId");
+        String roomName = request.getParameter("roomName");
         String requestMessage = request.getParameter("requestMessage");
 
         switch (func) {
         case "authenticateUser":
-            return "{ \"userId\": \"" + userId + "\", \"userURL\": " + "\"#oragon\"" + " }";
+            return "{ \"userName\": \"" + userName + "\", \"userURL\": " + "\"#oragon\"" + " }";
         case "registerUser":
-            return "{ \"userId\": \"" + userId + "\", \"userURL\": \"" + userURL + "\" }";
+            return "{ \"userName\": \"" + userName + "\", \"userURL\": \"" + userURL + "\" }";
         case "addRequest":
-            tmpReqList += ", {\"request\": \"" + requestMessage + "\", \"url\": \"" + userURL + "\"}";
+            tmpReqList += ", {\"requestMessage\": \"" + requestMessage + "\", \"userName\": \"" + userName +  "\", \"userURL\": \"" + userURL + "\"}";
             return "{ \"requestList\": " + "[" + tmpReqList + "]" + " }";
         case "getRequest":
             return "{ \"requestList\": " + "[" + tmpReqList + "]" + " }";
         case "getRoomList":
             return "{ \"roomList\": " + "[" + tmpRoomList + "]" + " }";
         case "createRoom":
-            tmpRoomList += ", {\"roomId\": \"" + roomId + "\"}";
+            tmpRoomList += ", {\"roomName\": \"" + roomName + "\"}";
             return "{ \"roomList\": " + "[" + tmpRoomList + "]" + " }";
         case "joinRoom":
-            tmpRoomList += ", {\"roomId\": \"" + roomId + "\"}";
+            tmpRoomList += ", {\"roomName\": \"" + roomName + "\"}";
             return "{ \"roomList\": " + "[" + tmpRoomList + "]" + " }";
         default:
             return "error";

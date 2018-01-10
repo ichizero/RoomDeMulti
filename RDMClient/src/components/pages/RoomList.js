@@ -37,11 +37,11 @@ class RoomList extends React.Component {
       isOpenJoinDialog: false,
       roomList: [
         {
-          roomId: " ",
+          roomName: " ",
         },
       ],
-      roomId: "",
-      newRoomId: "",
+      roomName: "",
+      newRoomName: "",
     });
 
     this.onCreateRoom = this.onCreateRoom.bind(this);
@@ -57,10 +57,10 @@ class RoomList extends React.Component {
    */
   componentDidMount() {
     this.setState({
-      userId: this.state.cookies.get('userId'),
+      userName: this.state.cookies.get('userName'),
     });
 
-    this.getRoomList(this.state.userId)
+    this.getRoomList(this.state.userName)
       .then(res => this.setState({ roomList: res.body.roomList }))
       .catch(err => console.log("Error: %s", err.message));
   }
@@ -81,10 +81,10 @@ class RoomList extends React.Component {
    * ルームリストをサーバーに要求する
    * @return Promiseを返す
    */
-  getRoomList(userId) {
+  getRoomList(userName) {
     return request.post("/api")
       .send('func=getRoomList')
-      .send('userId=' + userId);
+      .send('userName=' + userName);
   }
 
   /**
@@ -93,14 +93,14 @@ class RoomList extends React.Component {
   onCreateRoom(e) {
     e.preventDefault();
 
-    const roomId = this.state.newRoomId;
-    const userId = this.state.userId;
+    const roomName = this.state.newRoomName;
+    const userName = this.state.userName;
 
-    if (roomId != "") {
+    if (roomName != "") {
       request.post("/api")
         .send('func=createRoom')
-        .send('roomId=' + roomId)
-        .send('userId=' + userId)
+        .send('roomName=' + roomName)
+        .send('userName=' + userName)
         .then(res => this.setState({ roomList: res.body.roomList }))
         .catch(err => console.log("Error: %s", err.message));
     }
@@ -114,14 +114,14 @@ class RoomList extends React.Component {
   onJoinRoom(e) {
     e.preventDefault();
 
-    const roomId = this.state.roomId;
-    const userId = this.state.userId;
+    const roomName = this.state.roomName;
+    const userName = this.state.userName;
 
-    if (this.state.roomId != "") {
+    if (this.state.roomName != "") {
       request.post("/api")
         .send('func=joinRoom')
-        .send('roomId=' + roomId)
-        .send('userId=' + userId)
+        .send('roomName=' + roomName)
+        .send('userName=' + userName)
         .then(res => this.setState({ roomList: res.body.roomList }))
         .catch(err => console.log("Error: %s", err.message));
     }
@@ -186,8 +186,8 @@ class RoomList extends React.Component {
               <List>
                 {this.state.roomList.map((index) => {
                   return (
-                    <ListItem button divider component="a" href={"/room/" + index.roomId} key={index.roomId} >
-                      <ListItemText primary={index.roomId} />
+                    <ListItem button divider component="a" href={"/room/" + index.roomName} key={index.roomName} >
+                      <ListItemText primary={index.roomName} />
                     </ListItem>
                   );
                 })}
@@ -209,12 +209,12 @@ class RoomList extends React.Component {
                   <TextField
                     autoFocus
                     margin="dense"
-                    id="newRoomId"
+                    id="newRoomName"
                     label="ルーム名"
                     type="text"
                     fullWidth
-                    value={this.state.newRoomId}
-                    onChange={(e) => this.setState({ newRoomId: e.target.value })}
+                    value={this.state.newRoomName}
+                    onChange={(e) => this.setState({ newRoomName: e.target.value })}
                   />
                 </DialogContent>
                 <DialogActions>
@@ -242,12 +242,12 @@ class RoomList extends React.Component {
                   <TextField
                     autoFocus
                     margin="dense"
-                    id="roomId"
+                    id="roomName"
                     label="ルーム名"
                     type="text"
                     fullWidth
-                    value={this.state.roomId}
-                    onChange={(e) => this.setState({ roomId: e.target.value })}
+                    value={this.state.roomName}
+                    onChange={(e) => this.setState({ roomName: e.target.value })}
                   />
                 </DialogContent>
                 <DialogActions>

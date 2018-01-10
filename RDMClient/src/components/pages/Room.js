@@ -38,12 +38,13 @@ class Room extends React.Component {
     this.state = ({
       isAuthenticated: props.isAuthenticated,
       cookies: props.cookies,
-      roomId: props.match.params.id,
+      roomName: props.match.params.id,
       openDialog: false,
       requestList: [
         {
-          request: " ",
-          url: " ",
+          requestMessage: " ",
+          userName: " ",
+          userURL: " ",
         },
       ],
       requestMessage: "",
@@ -60,11 +61,11 @@ class Room extends React.Component {
    */
   componentDidMount() {
     this.setState({
-      userId: this.state.cookies.get('userId'),
+      userName: this.state.cookies.get('userName'),
       userURL: this.state.cookies.get('userURL'),
     });
 
-    this.getRequestList(this.state.roomId)
+    this.getRequestList(this.state.roomName)
       .then(res => this.setState({ requestList: res.body.requestList }))
       .catch(err => console.log("Error: %s", err.message));
   }
@@ -99,10 +100,10 @@ class Room extends React.Component {
    * リクエストリストをサーバーに要求する
    * @return Promiseを返す
    */
-  getRequestList(roomId) {
+  getRequestList(roomName) {
     return request.post("/api")
       .send('func=getRequest')
-      .send('roomId=' + roomId);
+      .send('roomName=' + roomName);
   }
 
   /**
@@ -111,17 +112,17 @@ class Room extends React.Component {
   onAddRequest(e) {
     e.preventDefault();
 
-    const userId = this.state.userId;
+    const userName = this.state.userName;
     const userURL = this.state.userURL;
-    const roomId = this.state.roomId;
+    const roomName = this.state.roomName;
     const requestMessage = this.state.requestMessage;
 
     if (requestMessage !== "") {
       request.post("/api")
         .send('func=addRequest')
-        .send('userId=' + userId)
+        .send('userName=' + userName)
         .send('userURL=' + userURL)
-        .send('roomId=' + roomId)
+        .send('roomName=' + roomName)
         .send('requestMessage=' + requestMessage)
         .then(res => this.setState({ requestList: res.body.requestList }))
         .catch(err => console.log("Error: %s", err.message));
@@ -136,7 +137,7 @@ class Room extends React.Component {
   onRefreshList(e) {
     e.preventDefault();
 
-    this.getRequestList(this.state.roomId)
+    this.getRequestList(this.state.roomName)
       .then(res => this.setState({ requestList: res.body.requestList }))
       .catch(err => console.log("Error: %s", err.message));
   }
@@ -155,7 +156,7 @@ class Room extends React.Component {
           <Grid container spacing={24} className={classes.root}>
             <Grid item xs={12}>
               <Typography type="display2" gutterBottom>
-                {this.state.roomId}
+                {this.state.roomName}
               </Typography>
             </Grid>
 
@@ -172,8 +173,9 @@ class Room extends React.Component {
               <List>
                 {this.state.requestList.map((index) => {
                   return (
-                    <ListItem button divider component="a" href={index.url} key={index.url}>
-                      <ListItemText primary={index.request} />
+                    <ListItem button divider component="a" href={index.userURL} key={index}>
+                      <ListItemText primary={index.userName} />
+                      <ListItemText primary={index.requestMessage} />
                     </ListItem>
                   );
                 })}
