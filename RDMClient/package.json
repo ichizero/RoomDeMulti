@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "webpack-dev-server --hot --inline",
     "watch": "webpack --watch --progress",
-    "build": "webpack"
+    "build": "webpack --config webpack.prod.js"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
