@@ -15,7 +15,7 @@ public class dbManager {
 	private User user;
 	private Request request;
 	Connection conn = null;
-	String database_path = getServletContext().getRealPath("WEB-INF/database.db");
+	String database_path = getServletContext().getRealPath("WebContent/WEB-INF/database.db");
 
 	/**
 	 * アカウント認証を行うためのメソッド
@@ -47,7 +47,7 @@ public class dbManager {
 				String userPass = rs.getString("userPass");
 
 				if (userPass.equals(pass)) {
-					frag = "\"userId\":\"" + uesrId + "\",” + “\"userURL\":\"" + userURL + "\"";
+					frag = "\"userId\":\"" + uesrId + "\",\"userURL\":\"" + userURL + "\"";
 					user = new User(userID, userName, userPass, userURL);
 					rooms = new ArrayList<Room>();
 
@@ -142,15 +142,56 @@ public class dbManager {
 				System.out.println("SQLException:" + e.getMessage());
 			}
 		}
-		return "\"userId\":\"" + id + "\",” + “\"userURL\":\"" + multiURL + "\"";
+		return "\"userId\":\"" + id + "\",\"userURL\":\"" + multiURL + "\"";
 	}
 
 	/**
-	 * ???
+	 * ルームのListを返すメソッド
 	 *
 	 */
-	public void getRoomList(String userID) {
+	public String getRoomList(String userID) {
+		try {
+			Class.forName("org.sqlite.JDBC").newInstance();
+			conn = DriverManager.getConnection("jdbc:sqlite:" + database_path);
 
+			Statement stmt = conn.createStatement();
+			String sql = "SERECT * FROM requests WHERE userID=" + userID + ";";
+			ResultSet rs = stmt.executeUpdate(sql);
+			String str = "";
+			ArrayList<Integer> num = new ArrayList<Integer>();  
+			while(rs.next()){
+				num.add(rs.getInt(roomID));
+			}
+			str += "\"roomList\":[";
+
+			
+			for(int i = 0;i < num.size();i++){
+				sql = "SERECT * FROM rooms WHERE roomID=" + num.get(i) + ";";
+				rs = stmt.executeQuery(sql);
+				str += "{\"roomName\":\"" + rs.getString(roomName) + "\"";
+				if(requestList.size() - 1 == i){
+					str += "}]";
+				}
+				else str += "},";
+			}
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("SQLException:" + e.getMessage());
+			}
+		}
+		return str;
 	}
 
 	/**
@@ -158,7 +199,7 @@ public class dbManager {
 	 *
 	 * @param roomName
 	 */
-	public void addRoom(int roomID) {
+	public StringConstant addRoom(String roomName) {
 		try {
 			Class.forName("org.sqlite.JDBC").newInstance();
 			conn = DriverManager.getConnection("jdbc:sqlite:" + database_path);
@@ -199,7 +240,7 @@ public class dbManager {
 	 *
 	 * @param roomName ルーム名
 	 */
-	public void joinRoom(String roomID) {
+	public void joinRoom(String roomName) {
 
 	}
 
@@ -208,42 +249,43 @@ public class dbManager {
 	 *
 	 * @param requestMessage 募集文
 	 * @param roomID ルームID
+	 * @return JSON文
 	 */
-	protected void addRequest(String requestMessage, int roomID) {
+	protected String addRequest(String requestMessage, String roomID) {
 		try {
 			String str = "";
 			Class.forName("org.sqlite.JDBC").newInstance();
 			conn = DriverManager.getConnection("jdbc:sqlite:" + database_path);
 
 			Statement stmt = conn.createStatement();
-			String sql = "INSERT INTO requests VALUES (" + roomID + "," + user.getUserID() + ",'" + requestMessage + "');";
+			String sql = "INSERT INTO requests VALUES (" + null + "," + user.getUserID() + ",'" + requestMessage + "');";
 			int num = stmt.executeUpdate(sql);
 
 			request = new Request(user.getUserID(),requestMessage);
+			ArrayList<Request> requestList = new ArrayList<Request>(); 
+			int roomIDx = null;
 			for(int i = 0;i == rooms.size()-1;i++){
 				if(rooms.get(i).getRoomID() == roomID){
+					requestList = rooms.get(i).getRequestList();
+					roomIDx = rooms.get(i);
 					room.addRequest(request);
 				}
 			}
-
-			sql = "SELECT * FROM requests WHERE roomID='" + roomID + "';";
-			rs = stmt.executeQuery(sql);
-
-
-			rs.last();
-			int nor = rs.getRow();
-			rs.beforeFirst();
-			if(nor != 1){
-
+			
+			str += "\"requestList\":[";
+			
+			for(int i = 0;i < requestList.size();i++){
+				sql = "SERECT * FROM users WHERE userID=" + requestList.get(i).getUserID() + ";";
+				ResultSet rs = stmt.executeQuery(sql);
+				str += "{\"userName\":\"" + rs.getString(userName) + "\",\"userURL\":\"" + rs.getString(userURL) + 
+						"\",\"requestMessage\":\"" + requestList.get(i).getQuestName() + "\"";
+				if(requestList.size() - 1 ==i){
+					str += "}]";
+				}
+				else str += "},";
 			}
-
-			while(rs.next()){
-				String a = "\"userId\":\"" + id + "\",” + “\"userURL\":\"" + multiURL + "\"";
-				builder.append("\"userId\":\"").append(userId).append("\",");
-				builder.append("\"userURL\":\"").append(userId).append("\",");
-				builder.append("\"requestMessage\":\"").append(userURL).append("\"");
-			}
-
+			
+			
 			stmt.close();
 		} catch (SQLException e) {
 			// TODO 自動生成された catch ブロック
@@ -260,6 +302,7 @@ public class dbManager {
 				System.out.println("SQLException:" + e.getMessage());
 			}
 		}
+		return str;
 	}
 
 	/**
@@ -269,18 +312,14 @@ public class dbManager {
 	 * @return データベースに存在すれば true を返す
 	 */
 	public boolean isExistingID(String id) {
-		int count = 0;
+		int num = 0;
 		try {
 			Class.forName("org.sqlite.JDBC").newInstance();
 			conn = DriverManager.getConnection("jdbc:sqlite:" + database_path);
 
 			Statement stmt = conn.createStatement();
-			String sql = "SELECT userID FROM users WHERE userName=" + id + ";";
-			ResultSet rs = stmt.executeQuery(sql);
-
-			while (rs.next()) {
-				++count;
-			}
+			String sql = "SELECT COUNT(*) FROM users WHERE userName=" + id + ";";
+			num = stmt.executeQuery(sql); 
 
 			rs.close();
 			stmt.close();
@@ -300,7 +339,7 @@ public class dbManager {
 			}
 		}
 
-		if (count == 1)
+		if (num == 1)
 			return true;
 		else
 			return false;

@@ -8,4 +8,12 @@ public class Request {
 		this.userID = userID;
 		this.questName = questName;
 	}
+	
+	public int getUserID(){
+		return userID;
+	}
+
+	public String getQuestName(){
+		return questName;
+	}
 }
