@@ -72,7 +72,7 @@ public class dbManager {
 
 						while (rs.next()) {
 							userID = rs.getInt("userID");
-							String text = rs.getString("requesstText");
+							String text = rs.getString("requestText");
 							request = new Request(userID, text);
 							room.addRequest(request);
 
@@ -122,7 +122,7 @@ public class dbManager {
 			conn = DriverManager.getConnection("jdbc:sqlite:" + database_path);
 
 			Statement stmt = conn.createStatement();
-			String sql = "INSERT INTO users VALUES (null,'" + id + "','" + multiURL + "','"
+			String sql = "INSERT INTO users (userName,userURL,userPass) VALUES ('" + id + "','" + multiURL + "','"
 					+ pass + "');";
 			int num = stmt.executeUpdate(sql);
 
@@ -149,13 +149,13 @@ public class dbManager {
 	 * ルームのListを返すメソッド
 	 *
 	 */
-	public String getRoomList(String userID) {
+	public String getRoomList(String userName) {
 		try {
 			Class.forName("org.sqlite.JDBC").newInstance();
 			conn = DriverManager.getConnection("jdbc:sqlite:" + database_path);
 
 			Statement stmt = conn.createStatement();
-			String sql = "SERECT * FROM requests WHERE userID=" + userID + ";";
+			String sql = "SERECT * FROM requests WHERE userID=" + user.getUserID() + ";";
 			ResultSet rs = stmt.executeUpdate(sql);
 			String str = "";
 			ArrayList<Integer> num = new ArrayList<Integer>();  
@@ -205,7 +205,7 @@ public class dbManager {
 			conn = DriverManager.getConnection("jdbc:sqlite:" + database_path);
 
 			Statement stmt = conn.createStatement();
-			String sql = "INSERT INTO rooms VALUES (null,'" + roomName + "');";
+			String sql = "INSERT INTO rooms(roomName) VALUES ('" + roomName + "');";
 			int num = stmt.executeUpdate(sql);
 
 			stmt.close();
@@ -230,8 +230,30 @@ public class dbManager {
 	 * ???
 	 *
 	 */
-	public void getRoomInf() {
-
+	public String getRoomInf(String roomName) {
+		String str = "";
+		ArrayList<Request> requestList = new ArrayList<Request>(); 
+		
+		for(int i = 0;i == rooms.size()-1;i++){
+							if(rooms.get(i).getRoomName().equals(roomName)){
+							requestList = rooms.get(i).getRequestList();
+							room.addRequest(request);
+						}
+					}
+					
+					str += "\"requestList\":[";
+					
+					for(int i = 0;i < requestList.size();i++){
+						sql = "SERECT * FROM users WHERE userID=" + requestList.get(i).getUserID() + ";";
+						ResultSet rs = stmt.executeQuery(sql);
+						str += "{\"userName\":\"" + rs.getString(userName) + "\",\"userURL\":\"" + rs.getString(userURL) + 
+								"\",\"requestMessage\":\"" + requestList.get(i).getQuestName() + "\"";
+						if(requestList.size() - 1 ==i){
+							str += "}]";
+						}
+						else str += "},";
+					}
+		return str;
 	}
 
 	/**
@@ -241,7 +263,7 @@ public class dbManager {
 	 * @param roomName ルーム名
 	 */
 	public void joinRoom(String roomName) {
-
+		
 	}
 
 	/**
@@ -251,23 +273,29 @@ public class dbManager {
 	 * @param roomID ルームID
 	 * @return JSON文
 	 */
-	protected String addRequest(String requestMessage, String roomID) {
+	protected String addRequest(String requestMessage, String roomName) {
 		try {
 			String str = "";
 			Class.forName("org.sqlite.JDBC").newInstance();
 			conn = DriverManager.getConnection("jdbc:sqlite:" + database_path);
+			int roomsIDx;
+
+			for(int i = 0;i == rooms.size() - 1;i++){
+				if(rooms.get(i).getRoomName().equals(roomName)){
+					roomsIDx = rooms.get(i).getRoomID();
+				}
+			}
 
 			Statement stmt = conn.createStatement();
-			String sql = "INSERT INTO requests VALUES (" + null + "," + user.getUserID() + ",'" + requestMessage + "');";
+			String sql = "INSERT INTO requests (roomID,userID,requestText) VALUES (" + roomsIDx + "," + user.getUserID() + ",'" + requestMessage + "');";
 			int num = stmt.executeUpdate(sql);
 
 			request = new Request(user.getUserID(),requestMessage);
 			ArrayList<Request> requestList = new ArrayList<Request>(); 
-			int roomIDx = null;
+
 			for(int i = 0;i == rooms.size()-1;i++){
-				if(rooms.get(i).getRoomID() == roomID){
+				if(rooms.get(i).getRoomName().equals(roomName)){
 					requestList = rooms.get(i).getRequestList();
-					roomIDx = rooms.get(i);
 					room.addRequest(request);
 				}
 			}
@@ -318,7 +346,7 @@ public class dbManager {
 			conn = DriverManager.getConnection("jdbc:sqlite:" + database_path);
 
 			Statement stmt = conn.createStatement();
-			String sql = "SELECT COUNT(*) FROM users WHERE userName=" + id + ";";
+			String sql = "SELECT COUNT(*) FROM users WHERE userName='" + id + "';";
 			num = stmt.executeQuery(sql); 
 
 			rs.close();

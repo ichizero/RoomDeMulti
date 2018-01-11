@@ -19,6 +19,10 @@ public class Room {
 		return roomID;
 	}
 
+	public String getRoomName(){
+		return roomName;
+	}
+
 	public ArrayList<User> getUserList(){
 		return userList;
 	}
