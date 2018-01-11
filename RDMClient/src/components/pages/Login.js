@@ -13,10 +13,14 @@ import Dialog, {
   DialogTitle,
 } from 'material-ui/Dialog';
 
+import PersonIcon from 'material-ui-icons/Person';
+import PersonAddIcon from 'material-ui-icons/PersonAdd';
+
 
 const styles = {
   root: {
     flexGrow: 1,
+    maxWidth: "560px",
   },
   tacenter: {
     textAlign: 'center',
@@ -108,7 +112,7 @@ class Login extends React.Component {
         (
           <Redirect to="/room" />
         ) : (
-          <Grid container spacing={24} className={classes.root}>
+          <Grid container justify={"center"} spacing={24} className={classes.root}>
             <Grid item xs={12}>
               <form>
                 <TextField
@@ -131,10 +135,10 @@ class Login extends React.Component {
               </form>
             </Grid>
             <Grid item xs={6} className={classes.tacenter}>
-              <Button raised color="primary" onClick={this.onAuthenticateUser}>ログイン</Button>
+              <Button raised color="primary" onClick={this.onAuthenticateUser}>ログイン<PersonIcon /></Button>
             </Grid>
             <Grid item xs={6} className={classes.tacenter}>
-              <Button raised color="accent" onClick={this.onOpenDialog}>新規登録</Button>
+              <Button raised color="accent" onClick={this.onOpenDialog}>新規登録<PersonAddIcon /></Button>
             </Grid>
 
             <div className="requestDialog">

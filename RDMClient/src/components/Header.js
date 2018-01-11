@@ -8,6 +8,8 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
+import IconButton from 'material-ui/IconButton';
+import FaceIcon from 'material-ui-icons/Face';
 
 
 const styles = {
@@ -16,6 +18,10 @@ const styles = {
   },
   flex: {
     flex: 1,
+  },
+  menuButton: {
+    marginLeft: -12,
+    marginRight: 20,
   },
 };
 
@@ -63,13 +69,16 @@ class Header extends React.Component {
       <div className={classes.root}>
         <AppBar position="static">
           <Toolbar>
+            <IconButton className={classes.menuButton} color="contrast" aria-label="Menu">
+              <FaceIcon />
+            </IconButton>
             <Typography type="title" color="inherit" className={classes.flex}>
               <Link to="/" style={{ color: "white", textDecoration: "none" }}>
                 ルームDEマルチ！
               </Link>
             </Typography>
             {isAuthenticated && (
-              <Button raised color="accent" onClick={this.onLogout} >ログアウト</Button>
+              <Button color="accent" onClick={this.onLogout} >ログアウト</Button>
             )}
           </Toolbar>
         </AppBar>

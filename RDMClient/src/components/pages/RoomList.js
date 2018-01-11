@@ -8,6 +8,7 @@ import { withStyles } from 'material-ui/styles';
 
 import Grid from 'material-ui/Grid';
 import List, { ListItem, ListItemText } from 'material-ui/List';
+import Divider from 'material-ui/Divider';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import Dialog, {
@@ -18,10 +19,17 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import Typography from 'material-ui/Typography';
 
+import GroupIcon from 'material-ui-icons/Group';
+import GroupAddIcon from 'material-ui-icons/GroupAdd';
+
 
 const styles = {
   root: {
     flexGrow: 1,
+    maxWidth: "560px",
+  },
+  h1title: {
+    paddingTop: "24px",
   },
 };
 
@@ -204,21 +212,26 @@ class RoomList extends React.Component {
         (
           <Redirect to="/" />
         ) : (
-          <Grid container spacing={24} className={classes.root}>
-            <Grid item xs={12}>
-              <Typography type="display2" gutterBottom>
+          <Grid container justify={"center"} spacing={24} className={classes.root}>
+            <Grid item>
+              <Typography type="display2" gutterBottom className={classes.h1title}>
                 参加済みルーム
               </Typography>
             </Grid>
+            <Grid item xs={12}>
+              <Grid container justify={"center"} spacing={40}>
+                <Grid item>
+                  <Button raised color="primary" onClick={this.onOpenJoinDialog}>ルーム参加<GroupIcon /></Button>
+                </Grid>
+                <Grid item>
+                  <Button raised color="accent" onClick={this.onOpenCreateDialog}>新規作成<GroupAddIcon /></Button>
+                </Grid>
+              </Grid>
+            </Grid>
 
-            <Grid item xs={6}>
-              <Button raised color="primary" onClick={this.onOpenCreateDialog}>新規作成</Button>
-            </Grid>
-            <Grid item xs={6}>
-              <Button raised color="primary" onClick={this.onOpenJoinDialog}>ルーム参加</Button>
-            </Grid>
 
             <Grid item xs={12}>
+              <Divider />
               <List>
                 {this.state.roomList.map((index) => {
                   return (

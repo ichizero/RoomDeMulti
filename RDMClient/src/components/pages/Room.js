@@ -8,6 +8,7 @@ import { withStyles } from 'material-ui/styles';
 
 import Grid from 'material-ui/Grid';
 import List, { ListItem, ListItemText } from 'material-ui/List';
+import Divider from 'material-ui/Divider';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import Dialog, {
@@ -18,12 +19,17 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import Typography from 'material-ui/Typography';
 
-import Refresh from 'material-ui-icons/Refresh';
+import AddIcon from 'material-ui-icons/Add';
+import RefreshIcon from 'material-ui-icons/Refresh';
 
 
 const styles = {
   root: {
     flexGrow: 1,
+    maxWidth: "560px",
+  },
+  h1title: {
+    paddingTop: "24px",
   },
 };
 
@@ -193,23 +199,28 @@ class Room extends React.Component {
         (
           <Redirect to="/" />
         ) : (
-          <Grid container spacing={24} className={classes.root}>
-            <Grid item xs={12}>
-              <Typography type="display2" gutterBottom>
+          <Grid container justify={"center"} spacing={24} className={classes.root}>
+            <Grid item>
+              <Typography type="display2" gutterBottom className={classes.h1title}>
                 {this.state.roomName}
               </Typography>
             </Grid>
 
             <Grid item xs={12}>
-              <Button raised color="primary" onClick={this.onOpenDialog}>クエストを募集する</Button>
-            </Grid>
-            <Grid item xs={12}>
-              <Button color="primary" onClick={this.onRefreshList}>
-                リスト更新<Refresh />
-              </Button>
+              <Grid container justify={"center"} spacing={40}>
+                <Grid item>
+                  <Button raised color="primary" onClick={this.onOpenDialog}>募集<AddIcon /></Button>
+                </Grid>
+                <Grid item>
+                  <Button color="primary" onClick={this.onRefreshList}>
+                    リスト更新<RefreshIcon />
+                  </Button>
+                </Grid>
+              </Grid>
             </Grid>
 
             <Grid item xs={12}>
+              <Divider />
               <List>
                 {this.state.requestList.map((index) => {
                   return (

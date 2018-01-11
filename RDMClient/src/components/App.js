@@ -17,7 +17,9 @@ import NotFound from './pages/NotFound';
 
 const styles = {
   container: {
-    padding: '3rem',
+    padding: "2rem",
+    display: "flex",
+    justifyContent: "center",
   },
 };
 
