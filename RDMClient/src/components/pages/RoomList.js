@@ -60,6 +60,19 @@ class RoomList extends React.Component {
       userName: this.state.cookies.get('userName'),
     });
 
+    // Development環境でのダミー処理
+    if (process.env.NODE_ENV !== "production") {
+      this.setState({
+        roomList: [
+          { roomName: "Room1" },
+          { roomName: "Room2" },
+          { roomName: "Room419" },
+        ],
+      });
+      this.onCloseCreateDialog();
+      return;
+    }
+
     this.getRoomList(this.state.userName)
       .then(res => this.setState({ roomList: res.body.roomList }))
       .catch(err => console.log("Error: %s", err.message));
@@ -82,6 +95,11 @@ class RoomList extends React.Component {
    * @return Promiseを返す
    */
   getRoomList(userName) {
+    // Development環境でのダミー処理
+    if (process.env.NODE_ENV !== "production") {
+      return;
+    }
+
     return request.post("/api")
       .send('func=getRoomList')
       .send('userName=' + userName);
@@ -93,9 +111,14 @@ class RoomList extends React.Component {
   onCreateRoom(e) {
     e.preventDefault();
 
+    // Development環境でのダミー処理
+    if (process.env.NODE_ENV !== "production") {
+      this.onCloseCreateDialog();
+      return;
+    }
+
     const userName = this.state.userName;
     const roomName = this.state.newRoomName;
-    this.setState({ newRoomName: "" });
 
     if (roomName != "") {
       request.post("/api")
@@ -114,6 +137,12 @@ class RoomList extends React.Component {
    */
   onJoinRoom(e) {
     e.preventDefault();
+
+    // Development環境でのダミー処理
+    if (process.env.NODE_ENV !== "production") {
+      this.onCloseCreateDialog();
+      return;
+    }
 
     const userName = this.state.userName;
     const roomName = this.state.roomName;

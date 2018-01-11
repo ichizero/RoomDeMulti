@@ -55,6 +55,14 @@ class App extends React.Component {
    * @param userURL マルチURL
    */
   onRegisterUser(userName, password, userURL) {
+    // Development環境でのダミー処理
+    if (process.env.NODE_ENV !== "production") {
+      this.state.cookies.set('userName', userName, { path: '/' });
+      this.state.cookies.set('userURL', userURL, { path: '/' });
+      this.setState({ isAuthenticated: true });
+      return;
+    }
+
     request.post("/api")
       .send('func=registerUser')
       .send('userName=' + userName)
@@ -74,6 +82,13 @@ class App extends React.Component {
    * @param password パスワード
    */
   onAuthenticateUser(userName, password) {
+    // Development環境でのダミー処理
+    if (process.env.NODE_ENV !== "production") {
+      this.state.cookies.set('userName', userName, { path: '/' });
+      this.setState({ isAuthenticated: true });
+      return;
+    }
+
     request.post("/api")
       .send('func=authenticateUser')
       .send('userName=' + userName)

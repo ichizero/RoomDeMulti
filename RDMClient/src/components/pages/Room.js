@@ -65,6 +65,27 @@ class Room extends React.Component {
       userURL: this.state.cookies.get('userURL'),
     });
 
+
+    // Development環境でのダミー処理
+    if (process.env.NODE_ENV !== "production") {
+      this.setState({
+        requestList: [
+          {
+            requestMessage: "Reuqest1",
+            userName: "User1",
+            userURL: "#userurl1",
+          },
+          {
+            requestMessage: "Reuqest2",
+            userName: "User2",
+            userURL: "#userurl2",
+          },
+        ],
+      });
+      this.onCloseDialog();
+      return;
+    }
+
     this.getRequestList(this.state.roomName)
       .then(res => this.setState({ requestList: res.body.requestList }))
       .catch(err => console.log("Error: %s", err.message));
@@ -104,6 +125,11 @@ class Room extends React.Component {
    * @return Promiseを返す
    */
   getRequestList(roomName) {
+    // Development環境でのダミー処理
+    if (process.env.NODE_ENV !== "production") {
+      return;
+    }
+
     return request.post("/api")
       .send('func=getRequest')
       .send('roomName=' + roomName);
@@ -114,6 +140,12 @@ class Room extends React.Component {
    */
   onAddRequest(e) {
     e.preventDefault();
+
+    // Development環境でのダミー処理
+    if (process.env.NODE_ENV !== "production") {
+      this.onCloseDialog();
+      return;
+    }
 
     const userName = this.state.userName;
     const userURL = this.state.userURL;
@@ -139,6 +171,11 @@ class Room extends React.Component {
    */
   onRefreshList(e) {
     e.preventDefault();
+
+    // Development環境でのダミー処理
+    if (process.env.NODE_ENV !== "production") {
+      return;
+    }
 
     this.getRequestList(this.state.roomName)
       .then(res => this.setState({ requestList: res.body.requestList }))
