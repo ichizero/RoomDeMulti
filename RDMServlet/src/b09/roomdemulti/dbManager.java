@@ -208,7 +208,7 @@ public class dbManager {
 	 * データベースにルームの追加を行う．
 	 *
 	 * @param roomName ルーム名
-	 * (@param userName ユーザ名)
+	 * (@param userName ユーザ名)////////////////////////////////////////////ここ！/////////////////////////////////////////////////////
 	 */
 	public StringConstant addRoom(String roomName) {
 		try {
@@ -278,7 +278,7 @@ public class dbManager {
 	 * JSON形式の String で返す．
 	 *
 	 * @param roomName ルーム名
-	 * (@param userName ユーザ名)
+	 * (@param userName ユーザ名)////////////////////////////////////////////ここ！/////////////////////////////////////////////////////
 	 * @return ルーム名
 	 */
 	public String joinRoom(String roomName) {
@@ -290,6 +290,8 @@ public class dbManager {
 	 * 追加ができれば，指定されたルーム名の募集一覧を 
 	 * JSON形式の String で返す．
 	 *
+	 * (@param userName ユーザ名)////////////////////////////////////////////ここ！/////////////////////////////////////////////////////
+	 * (@param userURL ユーザのマルチURL)////////////////////////////////////////////ここ！/////////////////////////////////////////////////////
 	 * @param requestMessage 募集文
 	 * @param roomName ルーム名
 	 * @return 募集分の一覧をJSON形式の String で返す

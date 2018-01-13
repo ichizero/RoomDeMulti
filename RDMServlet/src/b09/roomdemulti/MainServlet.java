@@ -80,16 +80,15 @@ public class MainServlet extends HttpServlet {
         case "registerUser":
             return this.dbm.admit(userName, password, userURL);
         case "addRequest":
-            return this.dbm.addRequest(roomName, requestMessage);
+            return this.dbm.addRequest(userName, userURL, requestMessage, roomName);
         case "getRequest":
             return this.dbm.getRoomInf(roomName);
         case "getRoomList":
             return this.dbm.getRoomList(userName);
         case "createRoom":
-            return this.dbm.addRoom(roomName);
+            return this.dbm.addRoom(roomName, userName);
         case "joinRoom":
-            // return this.dbm.joinRoom(roomName, userName);
-            return "Error";
+            return this.dbm.joinRoom(roomName, userName);
         default:
             return "Error";
         }
