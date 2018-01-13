@@ -69,7 +69,12 @@ class Login extends React.Component {
    * ダイアログを閉じる
    */
   onCloseDialog() {
-    this.setState({ isOpenDialog: false });
+    this.setState({
+      isOpenDialog: false,
+      newUserName: "",
+      newUserURL: "",
+      newPassword: ""
+    });
   }
 
   /**

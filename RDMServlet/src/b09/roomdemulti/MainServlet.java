@@ -43,7 +43,7 @@ public class MainServlet extends HttpServlet {
         // dbManager で処理を行い，受け取った結果を格納
         String buff = this.branchProcessing(func, request);
 
-        if (buff.matches(".*" + "error" + ".*")) {
+        if (buff.matches(".*" + "Error" + ".*")) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } else {
             builder.append(buff);
@@ -61,8 +61,8 @@ public class MainServlet extends HttpServlet {
      * 引数に与えられた内容によって処理を分岐させ，
      * DBManagerインスタンスに処理を委譲する．
      * @return 該当する処理があればJSON形式のString
-     *         処理にエラーがあれば"error"を含むString
-     *         処理がなければ"error"
+     *         処理にエラーがあれば"Error"を含むString
+     *         処理がなければ"Error"
      */
     protected String branchProcessing(String func, HttpServletRequest request) {
 
@@ -78,8 +78,7 @@ public class MainServlet extends HttpServlet {
         case "authenticateUser":
             return this.dbm.login(userName, password);
         case "registerUser":
-            // TODO：ユーザが登録済みかチェックする処理はDBM上で処理されるべき
-            return this.registerAccount(userName, password, userURL);
+            return this.dbm.admit(userName, password, userURL);
         case "addRequest":
             return this.dbm.addRequest(roomName, requestMessage);
         case "getRequest":
@@ -90,26 +89,9 @@ public class MainServlet extends HttpServlet {
             return this.dbm.addRoom(roomName);
         case "joinRoom":
             // return this.dbm.joinRoom(roomName);
-            return "error";
+            return "Error";
         default:
-            return "error";
-        }
-    }
-
-    /**
-     * アカウントの作成を行うメソッド
-     *
-     * @param userName ユーザID
-     * @param password パスワード
-     * @param userURL ユーザのマルチURL
-     * @return アカウントの登録ができれば，ユーザIDとユーザのマルチURLをJSON形式の文字列で返す
-     */
-    protected String registerAccount(String userName, String password, String userURL) {
-        // 既に存在するIDでなければ，アカウントをデータベースに追加する
-        if (!dbm.isExistingID(userName)) {
-            return addAccount(userName, password, userURL);
-        } else {
-            return "error";
+            return "Error";
         }
     }
 }

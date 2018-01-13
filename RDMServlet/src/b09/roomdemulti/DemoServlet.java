@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import b09.roomdemulti.DBMTest;
+
 /**
  * デモ用
  */
@@ -21,15 +23,20 @@ public class DemoServlet extends HttpServlet {
     private String tmpReqList = "{\"requestMessage\": \"イザナミ行こー！\", \"userName\": \"ゆー\", \"userURL\": \"http://localhost:8080/room#1\"}, {\"requestMessage\": \"マルチしよー！\", \"userName\": \"みー\", \"userURL\": \"http://localhost:8080/room#2\"}";
     private String tmpRoomList = "{\"roomName\": \"ルーム1\"}, {\"roomName\": \"るーむ2\"}";
 
+    private DBMTest dbm;
+
+    public DemoServlet() {
+        this.dbm = new DBMTest();
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        // System.out.println(request.getParameterMap());
 
         String func = request.getParameter("func");
         String json = this.branchProcessing(func, request);
 
-        if (json.equals("error")) {
+        if (json.matches(".*Error.*")) {
+            System.out.println(json);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } else {
             System.out.println(json);
@@ -49,11 +56,12 @@ public class DemoServlet extends HttpServlet {
 
         switch (func) {
         case "authenticateUser":
-            return "{ \"userName\": \"" + userName + "\", \"userURL\": " + "\"#oragon\"" + " }";
+            return this.dbm.authenticateUser(userName, password);
         case "registerUser":
-            return "{ \"userName\": \"" + userName + "\", \"userURL\": \"" + userURL + "\" }";
+            return this.dbm.registerUser(userName, password, userURL);
         case "addRequest":
-            tmpReqList += ", {\"requestMessage\": \"" + requestMessage + "\", \"userName\": \"" + userName +  "\", \"userURL\": \"" + userURL + "\"}";
+            tmpReqList += ", {\"requestMessage\": \"" + requestMessage + "\", \"userName\": \"" + userName
+                    + "\", \"userURL\": \"" + userURL + "\"}";
             return "{ \"requestList\": " + "[" + tmpReqList + "]" + " }";
         case "getRequest":
             return "{ \"requestList\": " + "[" + tmpReqList + "]" + " }";
@@ -66,7 +74,7 @@ public class DemoServlet extends HttpServlet {
             tmpRoomList += ", {\"roomName\": \"" + roomName + "\"}";
             return "{ \"roomList\": " + "[" + tmpRoomList + "]" + " }";
         default:
-            return "error";
+            return "Error";
         }
     }
 }
