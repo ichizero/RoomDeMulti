@@ -35,12 +35,13 @@ public class DemoServlet extends HttpServlet {
         String func = request.getParameter("func");
         String json = this.branchProcessing(func, request);
 
-        if (json.matches(".*Error.*")) {
+        response.setContentType("application/json; charset=UTF-8");
+
+        if (json.matches("Error.*")) {
             System.out.println(json);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, json);
         } else {
             System.out.println(json);
-            response.setContentType("application/json; charset=UTF-8");
             PrintWriter writer = response.getWriter();
             writer.append(json);
             writer.flush();

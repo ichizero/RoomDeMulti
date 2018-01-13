@@ -57,12 +57,11 @@ public class DBMTest {
     }
 
     public String authenticateUser(String userName, String password) {
-        JSONObject resultJson = new JSONObject();
-
         if (!exists(userName)) {
-            resultJson.put("Error", "このユーザは存在しません。");
-            return resultJson.toString();
+            return "Error: This user does not exist.";
         }
+
+        JSONObject resultJson = new JSONObject();
 
         Connection conn = null;
         ResultSet result = null;
@@ -100,12 +99,11 @@ public class DBMTest {
     }
 
     public String registerUser(String userName, String password, String userURL) {
-        JSONObject resultJson = new JSONObject();
-
         if (exists(userName)) {
-            resultJson.put("Error", "このユーザ名はすでに登録されています。");
-            return resultJson.toString();
+            return "Error: This user name is already registered.";
         }
+
+        JSONObject resultJson = new JSONObject();
 
         Connection conn = null;
         ResultSet result = null;
