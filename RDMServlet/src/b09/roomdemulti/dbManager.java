@@ -19,10 +19,12 @@ public class dbManager {
 
 	/**
 	 * アカウント認証を行うためのメソッド
+	 * 引数に与えられた ユーザ名 と パスワード がデータベース上に存在するものと一致した場合，
+	 * そのユーザの ユーザ名 と マルチURL をJSON形式の String で返す．
 	 *
-	 * @param id ユーザID
+	 * @param id ユーザ名
 	 * @param pass パスワード
-	 * @return ユーザIDとパスワードが一致していれば true を返す
+	 * @return ユーザ名と(そのユーザの)マルチURLのJSON形式の String 
 	 */
 	public string admit(String id, String pass) {
 		if (!isExistingID(id)) {
@@ -111,10 +113,13 @@ public class dbManager {
 
 	/**
 	 * データベースにアカウントを追加するためのメソッド
+	 * データベース上に存在しないユーザ名であれば，
+	 * データベース上にユーザ(ユーザ名 と パスワード と マルチURL)の追加を行う
 	 *
-	 * @param id
-	 * @param pass
-	 * @param multiURL
+	 * @param id ユーザ名
+	 * @param pass パスワード
+	 * @param multiURL マルチURL
+	 * @return ユーザ名と(そのユーザの)マルチURLのJSON形式の String
 	 */
 	public String addAccount(String id, String pass, String multiURL) {
 		try {
@@ -146,8 +151,11 @@ public class dbManager {
 	}
 
 	/**
-	 * ルームのListを返すメソッド
-	 *
+	 * 引数に与えられたユーザ名から，
+	 * そのユーザの所属しているルームの一覧をJSON形式の String で返す．
+	 * 
+	 * @param userName ユーザ名
+	 * @return 所属しているルーム一覧を表現するJSON形式の String
 	 */
 	public String getRoomList(String userName) {
 		try {
@@ -195,9 +203,12 @@ public class dbManager {
 	}
 
 	/**
-	 * ルームの追加を行うメソッド
+	 * 引数に与えられたルーム名から，
+	 * データベース内に同じルーム名のものがなければ，
+	 * データベースにルームの追加を行う．
 	 *
-	 * @param roomName
+	 * @param roomName ルーム名
+	 * (@param userName ユーザ名)
 	 */
 	public StringConstant addRoom(String roomName) {
 		try {
@@ -227,8 +238,12 @@ public class dbManager {
 	}
 
 	/**
-	 * ???
-	 *
+	 * 指定されたルーム名から，
+	 * ルーム内にある募集文の一覧の情報を
+	 * JSON形式の String で返す．
+	 * 
+	 * @param roomName ルーム名
+	 * @return そのルームの募集文一覧
 	 */
 	public String getRoomInf(String roomName) {
 		String str = "";
@@ -257,21 +272,27 @@ public class dbManager {
 	}
 
 	/**
-	 * ルームに参加するためのメソッド
-	 * ( Room クラスの userList にユーザを追加する)
+	 * ルームへの参加を行う．
+	 * ( Room クラスの userList にユーザを追加する )
+	 * 追加ができれば，ルーム名を
+	 * JSON形式の String で返す．
 	 *
 	 * @param roomName ルーム名
+	 * (@param userName ユーザ名)
+	 * @return ルーム名
 	 */
-	public void joinRoom(String roomName) {
+	public String joinRoom(String roomName) {
 		
 	}
 
 	/**
-	 * クエスト募集を追加するメソッド
+	 * データベースにクエスト募集を追加する．
+	 * 追加ができれば，指定されたルーム名の募集一覧を 
+	 * JSON形式の String で返す．
 	 *
 	 * @param requestMessage 募集文
-	 * @param roomID ルームID
-	 * @return JSON文
+	 * @param roomName ルーム名
+	 * @return 募集分の一覧をJSON形式の String で返す
 	 */
 	protected String addRequest(String requestMessage, String roomName) {
 		try {
@@ -334,9 +355,9 @@ public class dbManager {
 	}
 
 	/**
-	 * データベースに存在するIDか確認するためのメソッド
+	 * データベースに存在するユーザ名かどうかを返す．
 	 *
-	 * @param id ユーザID
+	 * @param id ユーザ名
 	 * @return データベースに存在すれば true を返す
 	 */
 	public boolean isExistingID(String id) {

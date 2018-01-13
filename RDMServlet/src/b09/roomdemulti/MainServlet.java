@@ -88,7 +88,7 @@ public class MainServlet extends HttpServlet {
         case "createRoom":
             return this.dbm.addRoom(roomName);
         case "joinRoom":
-            // return this.dbm.joinRoom(roomName);
+            // return this.dbm.joinRoom(roomName, userName);
             return "Error";
         default:
             return "Error";
