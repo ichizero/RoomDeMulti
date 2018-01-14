@@ -13,15 +13,4 @@ public class User {
 		this.url = url;
 	}
 
-	public int getUserID(){
-		return userID;
-	}
-
-	public String getUserName(){
-		return userName;
-	}
-
-	public String getURL(){
-		return url;
-	}
 }

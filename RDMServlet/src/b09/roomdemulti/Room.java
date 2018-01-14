@@ -14,28 +14,4 @@ public class Room {
 		userList = new ArrayList<User>();
 		requestList = new ArrayList<Request>();
 	}
-
-	public int getRoomID(){
-		return roomID;
-	}
-
-	public String getRoomName(){
-		return roomName;
-	}
-
-	public ArrayList<User> getUserList(){
-		return userList;
-	}
-	
-	public ArrayList<Request> getRequestList(){
-		return requestList;
-	}
-
-	public void addUser(User user){
-		userList.add(user);
-	}
-
-	public void addRequest(Request request){
-		requestList.add(request);
-	}
 }
