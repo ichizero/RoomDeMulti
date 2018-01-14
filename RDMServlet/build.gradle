@@ -27,11 +27,19 @@ compileJava {
     options.encoding = defaultEncoding
 }
 
-task mkwar(type: Exec, dependsOn: compileJava) {
+task compile(dependsOn: compileJava) {
+    
+}
+
+task makeWar(type: Exec, dependsOn: compileJava) {
     commandLine "jar", "cvf", "ROOT.war", "-C", "WebContent", "."
 }
 
 task run(type: Exec) {
+    commandLine "java", "-cp", "lib/*:bin/classes", "server.AppServer", "8080", "/", "WebContent"
+}
+
+task runWar(type: Exec) {
     commandLine "java", "-cp", "lib/*:bin/classes", "server.WarServer", "8080", "/", "ROOT.war"
 }
 
