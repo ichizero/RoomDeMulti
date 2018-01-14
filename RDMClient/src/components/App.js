@@ -32,11 +32,16 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { isAuthenticated: false, cookies: new Cookies() };
+    this.state = {
+      isAuthenticated: false,
+      snackmsg: "",
+      cookies: new Cookies()
+    };
 
     this.onRegisterUser = this.onRegisterUser.bind(this);
     this.onAuthenticateUser = this.onAuthenticateUser.bind(this);
     this.onLogout = this.onLogout.bind(this);
+    this.onCloseSnackBar = this.onCloseSnackBar.bind(this);
   }
 
   /**
@@ -65,17 +70,23 @@ class App extends React.Component {
       return;
     }
 
-    request.post("/api")
-      .send('func=registerUser')
-      .send('userName=' + userName)
-      .send("password=" + password)
-      .send("userURL=" + userURL)
-      .then(res => {
-        this.state.cookies.set('userName', res.body.userName, { path: '/' });
-        this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
-        this.setState({ isAuthenticated: true });
-      })
-      .catch(err => console.log("Error: %s", err.message));
+    if (userName.length > 10 | password.length > 10) {
+      this.setState({ snackmsg: "ユーザ名、パスワードは10文字以内です。" });
+    } else if (userURL.length > 100) {
+      this.setState({ snackmsg: "マルチURLに誤りがあります。" });
+    } else {
+      request.post("/api")
+        .send('func=registerUser')
+        .send('userName=' + userName)
+        .send("password=" + password)
+        .send("userURL=" + userURL)
+        .then(res => {
+          this.state.cookies.set('userName', res.body.userName, { path: '/' });
+          this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
+          this.setState({ isAuthenticated: true });
+        })
+        .catch(err => this.setState({ snackmsg: err.message }));
+    }
   }
 
   /**
@@ -91,16 +102,20 @@ class App extends React.Component {
       return;
     }
 
-    request.post("/api")
-      .send('func=authenticateUser')
-      .send('userName=' + userName)
-      .send("password=" + password)
-      .then(res => {
-        this.state.cookies.set('userName', res.body.userName, { path: '/' });
-        this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
-        this.setState({ isAuthenticated: true });
-      })
-      .catch(err => console.log("Error: %s", err.message));
+    if (userName.length > 10 | password.length > 10) {
+      this.setState({ snackmsg: "ユーザ名、パスワードは10文字以内です。" });
+    } else {
+      request.post("/api")
+        .send('func=authenticateUser')
+        .send('userName=' + userName)
+        .send("password=" + password)
+        .then(res => {
+          this.state.cookies.set('userName', res.body.userName, { path: '/' });
+          this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
+          this.setState({ isAuthenticated: true });
+        })
+        .catch(err => this.setState({ snackmsg: err.message }));
+    }
   }
 
   /**
@@ -112,6 +127,13 @@ class App extends React.Component {
       this.state.cookies.remove('userURL');
       this.setState({ isAuthenticated: false });
     }
+  }
+
+  /**
+   * SnackBarを隠す
+   */
+  onCloseSnackBar() {
+    this.setState({ snackmsg: "" });
   }
 
   /**
@@ -142,6 +164,8 @@ class App extends React.Component {
                   isAuthenticated={this.state.isAuthenticated}
                   onAuthenticateUser={this.onAuthenticateUser}
                   onRegisterUser={this.onRegisterUser}
+                  snackmsg={this.state.snackmsg}
+                  onCloseSnackBar={this.onCloseSnackBar}
                 />
               }
             />

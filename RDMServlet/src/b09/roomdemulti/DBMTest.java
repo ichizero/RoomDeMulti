@@ -16,37 +16,25 @@ import org.json.JSONArray;
  */
 public class DBMTest {
     // データベースのパス
+    // private static final String DB_PATH = "jdbc:sqlite:webapps/ROOT/WEB-INF/database.db";
     private static final String DB_PATH = "jdbc:sqlite:WebContent/WEB-INF/database.db";
 
-    private boolean exists(String userName) {
+    private boolean exists(String userName)
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         int existCount = 0;
 
-        Connection conn = null;
-        ResultSet result = null;
-        try {
-            Class.forName("org.sqlite.JDBC").newInstance();
-            conn = DriverManager.getConnection(DB_PATH);
-            Statement state = conn.createStatement();
+        Class.forName("org.sqlite.JDBC").newInstance();
+        Connection conn = DriverManager.getConnection(DB_PATH);
+        Statement state = conn.createStatement();
 
-            String sql = "SELECT COUNT(*) FROM users WHERE userName='" + userName + "';";
-            result = state.executeQuery(sql);
+        String sql = "SELECT COUNT(*) FROM users WHERE userName='" + userName + "';";
+        ResultSet result = state.executeQuery(sql);
+        existCount = result.getInt(1);
 
-            existCount = result.getInt(1);
-
-            result.close();
-            state.close();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            System.out.println("Exception: Failed to load SQLite driver.");
-        } catch (SQLException e) {
-            System.out.println("SQLException:" + e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                System.out.println("SQLException:" + e.getMessage());
-            }
+        result.close();
+        state.close();
+        if (conn != null) {
+            conn.close();
         }
 
         if (existCount == 1) {
@@ -56,85 +44,61 @@ public class DBMTest {
         }
     }
 
-    public String authenticateUser(String userName, String password) {
+    public String authenticateUser(String userName, String password)
+            throws Exception, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         if (!exists(userName)) {
-            return "Error: This user does not exist.";
+            throw new Exception("User does not exist.");
         }
 
         JSONObject resultJson = new JSONObject();
 
-        Connection conn = null;
-        ResultSet result = null;
-        try {
-            Class.forName("org.sqlite.JDBC").newInstance();
-            conn = DriverManager.getConnection(DB_PATH);
-            Statement state = conn.createStatement();
+        Class.forName("org.sqlite.JDBC").newInstance();
+        Connection conn = DriverManager.getConnection(DB_PATH);
+        Statement state = conn.createStatement();
 
-            String sql = "SELECT * FROM users WHERE userName='" + userName + "';";
-            result = state.executeQuery(sql);
-            if (password.equals(result.getString("userPass"))) {
-                resultJson.put("userName", result.getString("userName"));
-                resultJson.put("userURL", result.getString("userURL"));
-            } else {
-                resultJson.put("Error", "パスワードが間違っています。");
-            }
+        String sql = "SELECT * FROM users WHERE userName='" + userName + "';";
+        ResultSet result = state.executeQuery(sql);
+        if (password.equals(result.getString("userPass"))) {
+            resultJson.put("userName", result.getString("userName"));
+            resultJson.put("userURL", result.getString("userURL"));
+        } else {
+            throw new Exception("Password is incorrect.");
+        }
 
-            result.close();
-            state.close();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            System.out.println("Exception: Failed to load SQLite driver.");
-        } catch (SQLException e) {
-            System.out.println("SQLException:" + e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                System.out.println("SQLException:" + e.getMessage());
-            }
+        result.close();
+        state.close();
+        if (conn != null) {
+            conn.close();
         }
 
         return resultJson.toString();
     }
 
-    public String registerUser(String userName, String password, String userURL) {
+    public String registerUser(String userName, String password, String userURL)
+            throws Exception, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         if (exists(userName)) {
-            return "Error: This user name is already registered.";
+            throw new Exception("User name is already in use.");
         }
 
         JSONObject resultJson = new JSONObject();
 
-        Connection conn = null;
-        ResultSet result = null;
-        try {
-            Class.forName("org.sqlite.JDBC").newInstance();
-            conn = DriverManager.getConnection(DB_PATH);
-            Statement state = conn.createStatement();
+        Class.forName("org.sqlite.JDBC").newInstance();
+        Connection conn = DriverManager.getConnection(DB_PATH);
+        Statement state = conn.createStatement();
 
-            String sql = "INSERT INTO users (userName,userURL,userPass) VALUES ('" + userName + "', '" + userURL
-                    + "', '" + password + "');";
-            state.executeUpdate(sql);
-            sql = "SELECT * FROM users WHERE userName='" + userName + "';";
-            result = state.executeQuery(sql);
+        String sql = "INSERT INTO users (userName,userURL,userPass) VALUES ('" + userName + "', '" + userURL + "', '"
+                + password + "');";
+        state.executeUpdate(sql);
+        sql = "SELECT * FROM users WHERE userName='" + userName + "';";
+        ResultSet result = state.executeQuery(sql);
 
-            resultJson.put("userName", result.getString("userName"));
-            resultJson.put("userURL", result.getString("userURL"));
+        resultJson.put("userName", result.getString("userName"));
+        resultJson.put("userURL", result.getString("userURL"));
 
-            result.close();
-            state.close();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            System.out.println("Exception: Failed to load SQLite driver.");
-        } catch (SQLException e) {
-            System.out.println("SQLException:" + e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                System.out.println("SQLException:" + e.getMessage());
-            }
+        result.close();
+        state.close();
+        if (conn != null) {
+            conn.close();
         }
 
         return resultJson.toString();

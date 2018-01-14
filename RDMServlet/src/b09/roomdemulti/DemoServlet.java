@@ -11,7 +11,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.sql.SQLException;
+
 import b09.roomdemulti.DBMTest;
+
 
 /**
  * デモ用
@@ -32,23 +35,23 @@ public class DemoServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String func = request.getParameter("func");
-        String json = this.branchProcessing(func, request);
-
         response.setContentType("application/json; charset=UTF-8");
 
-        if (json.matches("Error.*")) {
-            System.out.println(json);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, json);
-        } else {
+        String func = request.getParameter("func");
+
+        try {
+            String json = this.branchProcessing(func, request);
             System.out.println(json);
             PrintWriter writer = response.getWriter();
             writer.append(json);
             writer.flush();
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
-    protected String branchProcessing(String func, HttpServletRequest request) {
+    protected String branchProcessing(String func, HttpServletRequest request)
+            throws Exception, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         String userName = request.getParameter("userName");
         String password = request.getParameter("password");
         String userURL = request.getParameter("userURL");

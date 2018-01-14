@@ -18,9 +18,12 @@ import Dialog, {
   DialogTitle,
 } from 'material-ui/Dialog';
 import Typography from 'material-ui/Typography';
+import Snackbar from 'material-ui/Snackbar';
+import IconButton from 'material-ui/IconButton';
 
 import GroupIcon from 'material-ui-icons/Group';
 import GroupAddIcon from 'material-ui-icons/GroupAdd';
+import CloseIcon from 'material-ui-icons/Close';
 
 
 const styles = {
@@ -43,6 +46,8 @@ class RoomList extends React.Component {
       cookies: props.cookies,
       isOpenCreateDialog: false,
       isOpenJoinDialog: false,
+      isOpenSnackBar: false,
+      snackmsg: "",
       roomList: [
         {
           roomName: " ",
@@ -58,6 +63,8 @@ class RoomList extends React.Component {
     this.onCloseCreateDialog = this.onCloseCreateDialog.bind(this);
     this.onOpenJoinDialog = this.onOpenJoinDialog.bind(this);
     this.onCloseJoinDialog = this.onCloseJoinDialog.bind(this);
+    this.onOpenSnackBar = this.onOpenSnackBar.bind(this);
+    this.onCloseSnackBar = this.onCloseSnackBar.bind(this);
   }
 
   /**
@@ -128,7 +135,10 @@ class RoomList extends React.Component {
     const userName = this.state.userName;
     const roomName = this.state.newRoomName;
 
-    if (roomName != "") {
+    if (roomName.length > 10) {
+      this.setState({ snackmsg: "ルーム名は10文字以内です。" });
+      this.onOpenSnackBar();
+    } else if (roomName != "") {
       request.post("/api")
         .send('func=createRoom')
         .send('roomName=' + roomName)
@@ -155,7 +165,10 @@ class RoomList extends React.Component {
     const userName = this.state.userName;
     const roomName = this.state.roomName;
 
-    if (this.state.roomName != "") {
+    if (roomName.length > 10) {
+      this.setState({ snackmsg: "ルーム名は10文字以内です。" });
+      this.onOpenSnackBar();
+    } else if (this.state.roomName != "") {
       request.post("/api")
         .send('func=joinRoom')
         .send('roomName=' + roomName)
@@ -198,6 +211,23 @@ class RoomList extends React.Component {
     this.setState({
       isOpenJoinDialog: false,
       roomName: ""
+    });
+  }
+
+  /**
+   * SnackBarを表示する
+   */
+  onOpenSnackBar() {
+    this.setState({ isOpenSnackBar: true });
+  }
+
+  /**
+   * SnackBarを隠す
+   */
+  onCloseSnackBar() {
+    this.setState({
+      isOpenSnackBar: false,
+      snackmsg: "",
     });
   }
 
@@ -309,6 +339,30 @@ class RoomList extends React.Component {
                 </DialogActions>
               </Dialog>
             </div>
+            <Snackbar
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              open={this.state.isOpenSnackBar}
+              autoHideDuration={6000}
+              onClose={this.onCloseSnackBar}
+              SnackbarContentProps={{
+                'aria-describedby': 'message-id',
+              }}
+              message={<span id="message-id">{this.state.snackmsg}</span>}
+              action={
+                <IconButton
+                  key="close"
+                  aria-label="Close"
+                  color="inherit"
+                  className={classes.close}
+                  onClick={this.onCloseSnackBar}
+                >
+                  <CloseIcon />
+                </IconButton>
+              }
+            />
           </Grid>
         )
     );

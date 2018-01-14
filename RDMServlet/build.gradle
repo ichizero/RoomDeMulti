@@ -1,0 +1,40 @@
+apply plugin: 'java'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+   main {
+        java {
+            srcDir 'src/b09/roomdemulti'
+            exclude 'dbManager.java'
+            exclude 'MainServlet.java'
+       }
+       output.classesDir = 'WebContent/WEB-INF/classes/'
+   }
+}
+
+dependencies {
+  compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+def defaultEncoding = 'UTF-8'
+compileJava {
+    options.encoding = defaultEncoding
+}
+
+task mkwar(type: Exec, dependsOn: compileJava) {
+    commandLine "jar", "cvf", "ROOT.war", "-C", "WebContent", "."
+}
+
+task run(type: Exec) {
+    commandLine "java", "-cp", "lib/*:bin/classes", "server.WarServer", "8080", "/", "ROOT.war"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.4.1'
+}

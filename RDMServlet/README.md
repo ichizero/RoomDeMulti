@@ -15,3 +15,8 @@ javac -d WebContent/WEB-INF/classes -cp "lib/*" src/b09/roomdemulti/*.java
 ```bash
 java -cp "lib/*:bin/classes" server.AppServer 8080 / WebContent
 ```
+
+## WARファイルの作成
+```bash
+jar cvf ROOT.war -C WebContent .
+```
