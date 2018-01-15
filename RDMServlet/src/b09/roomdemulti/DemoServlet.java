@@ -78,7 +78,7 @@ public class DemoServlet extends HttpServlet {
             tmpRoomList += ", {\"roomName\": \"" + roomName + "\"}";
             return "{ \"roomList\": " + "[" + tmpRoomList + "]" + " }";
         default:
-            return "Error";
+        throw new Exception("Error");
         }
     }
 }

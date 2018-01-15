@@ -9,8 +9,10 @@ do
         loop=0
         ;;
         run) java -cp "lib/*:bin/classes" server.AppServer 8080 / WebContent
+        loop=0
         ;;
         makeWar) jar cvf ROOT.war -C WebContent .
+        loop=0
         ;;
     esac
 done

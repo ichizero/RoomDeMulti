@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.sql.SQLException;
+
 /**
  * サーブレット実装クラス
  * 
@@ -19,14 +21,14 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/test")
 public class MainServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private dbManager dbm;
+    private DBManager dbm;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
     public MainServlet() {
         super();
-        this.dbm = new dbManager();
+        this.dbm = new DBManager();
     }
 
     /**
@@ -35,25 +37,18 @@ public class MainServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        StringBuilder builder = new StringBuilder();
-        builder.append('{');
+        response.setContentType("application/json; charset=UTF-8");
 
-        // クライアントサイドからどのような処理を行うのかを受け取る
         String func = request.getParameter("func");
-        // dbManager で処理を行い，受け取った結果を格納
-        String buff = this.branchProcessing(func, request);
 
-        if (buff.matches(".*" + "Error" + ".*")) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        } else {
-            builder.append(buff);
-            builder.append('}');
-            String json = builder.toString();
+        try {
+            String json = this.branchProcessing(func, request);
             System.out.println(json);
-            response.setContentType("application/json; charset=UTF-8");
             PrintWriter writer = response.getWriter();
             writer.append(json);
             writer.flush();
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -64,21 +59,22 @@ public class MainServlet extends HttpServlet {
      *         処理にエラーがあれば"Error"を含むString
      *         処理がなければ"Error"
      */
-    protected String branchProcessing(String func, HttpServletRequest request) {
+    protected String branchProcessing(String func, HttpServletRequest request)
+            throws Exception, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
 
         // POSTパラメータから値をセット．存在しなければnull
         String userName = request.getParameter("userName"); // ユーザ名
         String password = request.getParameter("password"); // パスワード
-        String userURL = request.getParameter("userURL");   // ユーザのマルチURL
+        String userURL = request.getParameter("userURL"); // ユーザのマルチURL
         String roomName = request.getParameter("roomName"); // ルーム名
         String requestMessage = request.getParameter("requestMessage"); // リクエスト文
 
         // func によって処理を変える
         switch (func) {
         case "authenticateUser":
-            return this.dbm.login(userName, password);
+            return this.dbm.admit(userName, password);
         case "registerUser":
-            return this.dbm.admit(userName, password, userURL);
+            return this.dbm.addAccount(userName, password, userURL);
         case "addRequest":
             return this.dbm.addRequest(userName, userURL, requestMessage, roomName);
         case "getRequest":
@@ -90,7 +86,7 @@ public class MainServlet extends HttpServlet {
         case "joinRoom":
             return this.dbm.joinRoom(roomName, userName);
         default:
-            return "Error";
+            throw new Exception("Error");
         }
     }
 }
