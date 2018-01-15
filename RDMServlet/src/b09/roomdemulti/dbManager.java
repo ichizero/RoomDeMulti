@@ -6,8 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.sql.Date;
-
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -29,96 +27,34 @@ public class dbManager {
 	 * @param pass パスワード
 	 * @return ユーザ名と(そのユーザの)マルチURLのJSON形式の String 
 	 */
-	public string admit(String id, String pass) {
-		if (!isExistingID(id)) {
-			return "";
+	public string admit(String id, String pass)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		if (!isExistisExistingIUserName(id){
+			throw new Exception("User does not exist.");
 		}
 
-		else {
-			String str = "";
+		JSONObject resultJson = new JSONObject();
 
-			try {
-				Class.forName("org.sqlite.JDBC").newInstance();
-				conn = DriverManager.getConnection(database_path);
+		Class.forName("org.sqlite.JDBC").newInstance();
+		Connection conn = DriverManager.getConnection(DB_PATH);
+		Statement state = conn.createStatement();
 
-				Statement stmt = conn.createStatement();
-
-				//user情報を取る
-				String sql = "SELECT * FROM users WHERE userName='" + id + "';";
-				ResultSet rs = stmt.executeQuery(sql);
-				JSONArray jsonArray = convertToJSON(rs);
-
-				int userID = rs.getInt("userID");
-				String userName = rs.getString("userName");
-				String userURL = rs.getString("userURL");
-				String userPass = rs.getString("userPass");
-
-				if (userPass.equals(pass)) {
-					str = "\"userId\":\"" + uesrId + "\",\"userURL\":\"" + userURL + "\"";
-					user = new User(userID, userName, userPass, userURL);
-					rooms = new ArrayList<Room>();
-
-					//ユーザの入っているルームを取る
-					sql = "SELECT roomID FROM requests WHERE userID='" + userID + "';";
-					rs = stmt.executeQuery(sql);
-					ArrayList<Integer> num = new ArrayList<Integer>();
-					while (rs.next()) {
-						num.add(rs.getInt("roomID"));
-					}
-
-					//ユーザの入っているルーム情報の構築
-					for (int i = 0; i == num.size() - 1; i++) {
-
-						//room作成
-						sql = "SELECT * FROM rooms WHERE roomID=" + num.get(i) + ";";
-						rs = stmt.executeQuery(sql);
-						String roomName = rs.getString("roomName");
-						room = new Room(rs.getInt("roomID"), roomName);
-
-						//requestを日付降順で取る
-						sql = "SELECT * FROM requests WHERE roomID=" + num.get(i) + "ORDER BY date DESC;";
-						rs = stmt.executeQuery(sql);
-
-						//roomにuserListとRequestListのデータを追加
-						while (rs.next()) {
-							userID = rs.getInt("userID");
-							String text = rs.getString("requestText");
-							Date date = rs.getDate("date");
-							request = new Request(userID, text, date);
-							room.addRequest(request);
-
-							sql = "SELECT * FROM users WHERE userID=" + userID + ";";
-							ResultSet rs2 = stmt.executeQuery(sql);
-							userName = rs2.getString("userName");
-							userURL = rs2.getString("userURL");
-							userPass = rs2.getString("userPass");
-							User user2 = new User(userID, userName, userPass, userURL);
-							room.addUser(user2);
-						}
-						//roomsリストにroomを格納
-						rooms.add(room);
-					}
-				}
-
-				rs.close();
-				stmt.close();
-			} catch (SQLException e) {
-				// TODO 自動生成された catch ブロック
-				e.printStackTrace();
-			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-				// TODO 自動生成された catch ブロック
-				e.printStackTrace();
-			} finally {
-				try {
-					if (conn != null) {
-						conn.close();
-					}
-				} catch (SQLException e) {
-					System.out.println("SQLException:" + e.getMessage());
-				}
-			}
-			return str;
+		String sql = "SELECT * FROM users WHERE userName='" + userName + "';";
+		ResultSet result = state.executeQuery(sql);
+		if (password.equals(result.getString("userPass"))) {
+			resultJson.put("userName", result.getString("userName"));
+			resultJson.put("userURL", result.getString("userURL"));
+		} else {
+			throw new Exception("Password is incorrect.");
 		}
+
+		result.close();
+		state.close();
+		if (conn != null) {
+			conn.close();
+		}
+
+		return resultJson.toString();
 	}
 
 	/**
@@ -168,7 +104,8 @@ public class dbManager {
 	 * @param userName ユーザ名
 	 * @return 所属しているルーム一覧を表現するJSON形式の String
 	 */
-	public String getRoomList(String userName) {
+	public String getRoomList(String userName)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
 
 		Class.forName("org.sqlite.JDBC").newInstance();
 		conn = DriverManager.getConnection(database_path);
@@ -213,8 +150,9 @@ public class dbManager {
 	 * @param roomName ルーム名
 	 * (@param userName ユーザ名)////////////////////////////////////////////ここ！/////////////////////////////////////////////////////
 	 */
-	public String addRoom(String roomName, String userName) {
-		if (isExistingIRoomName(roomName)) {
+	public String addRoom(String roomName, String userName)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		if (isExistingRoomName(roomName)) {
 			throw new Exception("Room name is already in use.");
 		}
 
@@ -253,30 +191,45 @@ public class dbManager {
 	 * @param roomName ルーム名
 	 * @return そのルームの募集文一覧
 	 */
-	public String getRoomInf(String roomName) {
-		String str = "";
-		ArrayList<Request> requestList = new ArrayList<Request>();
+	public String getRoomInf(String roomName)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
 
-		for (int i = 0; i == rooms.size() - 1; i++) {
-			if (rooms.get(i).getRoomName().equals(roomName)) {
-				requestList = rooms.get(i).getRequestList();
-				room.addRequest(request);
-			}
+		Class.forName("org.sqlite.JDBC").newInstance();
+		conn = DriverManager.getConnection(database_path);
+		int roomID;
+		JSONObject resultJson;
+		JSONArray JA;
+
+		Statement stmt = conn.createStatement();
+
+		String sql = "SERECT * FROM rooms WHERE roomName='" + roomName + "';";
+		ResultSet rs = stmt.executeQuery(sql);
+		roomID = rs.getInt("roomID");
+
+		sql = "SERECT * FROM requests WHERE roomID=" + roomID + "ORDER BY date DESC;";
+		rs = stmt.executeQuery(sql);
+
+		JA = new JSONArray();
+		while (rs.next()) {
+			userID = rs.getInt("userID");
+			sql = "SERECT * FROM users WHERE userID='" + userID + "';";
+			ResultSet rs2 = stmt.executeQuery(sql);
+			resultJson = new JSONObject();
+			resultJson.put("userName", rs2.getString("userName"));
+			resultJson.put("userURL", rs2.getString("userURL"));
+			resultJson.put("requestMessage", rs.getString("requestText"));
+			JA.append(ressultJson);
 		}
 
-		str += "\"requestList\":[";
+		resultJson = new JSONObject();
+		resultJson.setJSONArray("requestList", JA);
 
-		for (int i = 0; i < requestList.size(); i++) {
-			sql = "SERECT * FROM users WHERE userID=" + requestList.get(i).getUserID() + ";";
-			ResultSet rs = stmt.executeQuery(sql);
-			str += "{\"userName\":\"" + rs.getString(userName) + "\",\"userURL\":\"" + rs.getString(userURL)
-					+ "\",\"requestMessage\":\"" + requestList.get(i).getQuestName() + "\"";
-			if (requestList.size() - 1 == i) {
-				str += "}]";
-			} else
-				str += "},";
+		stmt.close();
+
+		if (conn != null) {
+			conn.close();
 		}
-		return str;
+		return resultJson.toString();
 	}
 
 	/**
@@ -289,24 +242,45 @@ public class dbManager {
 	 * (@param userName ユーザ名)////////////////////////////////////////////ここ！/////////////////////////////////////////////////////
 	 * @return ルーム名
 	 */
-	public String joinRoom(String roomName) {
+	public String joinRoom(String roomName,String userName) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException{
 
-		//roomIDとuserIDを紐付けるためにrequestsに追加
-		String sql = "INSERT INTO requests (roomID,userID) VALUES (" + roomsIDx + "," + user.getUserID() + "');";
+		Class.forName("org.sqlite.JDBC").newInstance();
+		conn = DriverManager.getConnection(database _path);
+
+	int roomID;
+	int userID;
+	JSONObject resultJson;
+	Statement stmt = conn.createStatement();
+
+	String sql = "SERECT * FROM rooms WHERE roomName='" + roomName + "';";
+	ResultSet rs = stmt.executeQuery(sql);roomID=rs.getInt("roomID");sql="SERECT * FROM users WHERE userName='"+userName+"';";userID=rs.getInt("userID");
+
+	//roomIDとuserIDを紐付けるためにrequestsに追加
+	String sql = "INSERT INTO requests (roomID,userID) VALUES (" + roomID + "," + userID
+			+ "');";stmt.executeUpdate(sql);resultJson.put("roomName",roomName);
+
+	stmt.close();
+
+	if(conn!=null)
+	{
+		conn.close();
+	}
+
+	return resultJson.toString();
 	}
 
 	/**
 	 * データベースにクエスト募集を追加する．
 	 * 追加ができれば，指定されたルーム名の募集一覧を 
 	 * JSON形式の String で返す．
-	 *
-	 * (@param userName ユーザ名)////////////////////////////////////////////ここ！/////////////////////////////////////////////////////
-	 * (@param userURL ユーザのマルチURL)////////////////////////////////////////////ここ！/////////////////////////////////////////////////////
+	 * 
+	 * (@param userName ユーザ名)// //////////////////////////////////////////ここ！/////////////////////////////////////////////////////
+	 * (@param userURL ユーザのマルチURL)//// ////////////////////////////////////////ここ！/////////////////////////////////////////////////////
 	 * @param requestMessage 募集文
 	 * @param roomName ルーム名
 	 * @return 募集分の一覧をJSON形式の String で返す
 	 */
-	protected String addRequest(String userName,String userURL,String requestMessage, String roomName) {
+	protected String addRequest(String user Name,String userURL,String requestMessage, String roomName) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
 
 		Class.forName("org.sqlite.JDBC").newInstance();
 		conn = DriverManager.getConnection(database_path);
@@ -316,7 +290,7 @@ public class dbManager {
 		JSONArray JA;
 
 		Statement stmt = conn.createStatement();
-		Date date = new Date(System.currentTimeMillis());
+		long time = System.currentTimeMillis();
 
 		String sql = "SERECT * FROM rooms WHERE roomName='" + roomName + "';";
 		ResultSet rs = stmt.executeQuery(sql);
@@ -324,8 +298,8 @@ public class dbManager {
 		sql = "SERECT * FROM users WHERE userName='" + userName + "';";
 		userID = rs.getInt("userID");
 
-		//updateへ
-		sql = "UPDATE requests SET requestText='" + requestMessage + ",date=" + date + "' WHERE roomID=" + roomID + " and userID=" + userID + ";";
+		//update
+		sql = "UPDATE requests SET requestText='" + requestMessage + ",time=" + time + "' WHERE roomID=" + roomID + " and userID=" + userID + ";";
 		stmt.executeUpdate(sql);
 
 		sql = "SERECT * FROM requests WHERE roomID=" + roomID + "ORDER BY date DESC;";
@@ -360,7 +334,7 @@ public class dbManager {
 	 * @param userName ユーザ名
 	 * @return データベースに存在すれば true を返す
 	 */
-	public boolean isExistingIUserName(String userName)
+	public boolean isExistingUserName(String userName)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
 		int existCount = 0;
 
@@ -385,7 +359,7 @@ public class dbManager {
 		}
 	}
 
-	public boolean isExistingIRoomName(String roomName)
+	public boolean isExistingRoomName(String roomName)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
 		int existCount = 0;
 
