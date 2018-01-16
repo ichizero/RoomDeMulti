@@ -31,6 +31,17 @@ const styles = {
     flexGrow: 1,
     maxWidth: "560px",
   },
+  listTopDiv: {
+    margin: "0 -2rem",
+  },
+  list: {
+    padding: 0,
+    margin: "0 -2rem",
+  },
+  roomItem: {
+    paddingLeft: "3rem",
+    paddingRight: "3rem",
+  },
   h1title: {
     paddingTop: "24px",
   },
@@ -77,7 +88,7 @@ class RoomList extends React.Component {
         roomList: [
           { roomName: "Room1" },
           { roomName: "Room2" },
-          { roomName: "Room419" },
+          { roomName: "あのイーハトーヴォの" },
         ],
       });
       this.onCloseCreateDialog();
@@ -240,7 +251,7 @@ class RoomList extends React.Component {
         ) : (
           <Grid container justify={"center"} spacing={24} className={classes.root}>
             <Grid item>
-              <Typography type="display2" gutterBottom className={classes.h1title}>
+              <Typography type="display1" gutterBottom className={classes.h1title}>
                 参加済みルーム
               </Typography>
             </Grid>
@@ -257,11 +268,11 @@ class RoomList extends React.Component {
 
 
             <Grid item xs={12}>
-              <Divider />
-              <List>
+              <Divider className={classes.listTopDiv}/>
+              <List className={classes.list}>
                 {this.state.roomList.map((index) => {
                   return (
-                    <ListItem button divider component="a" href={"/room/" + index.roomName} key={index.roomName} >
+                    <ListItem className={classes.roomItem} button divider component="a" href={"/room/" + index.roomName} key={index.roomName} >
                       <ListItemText primary={index.roomName} />
                     </ListItem>
                   );
@@ -330,7 +341,7 @@ class RoomList extends React.Component {
                     キャンセル
                   </Button>
                   <Button onClick={this.onJoinRoom} color="primary">
-                    検索
+                    参加
                   </Button>
                 </DialogActions>
               </Dialog>

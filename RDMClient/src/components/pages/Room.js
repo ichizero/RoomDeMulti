@@ -35,8 +35,15 @@ const styles = {
   h1title: {
     paddingTop: "24px",
   },
+  listTopDiv: {
+    margin: "0 -2rem",
+  },
+  list: {
+    padding: 0,
+    margin: "0 -2rem",
+  },
   avatar: {
-    marginRight: 10,
+    marginRight: "16px",
     color: '#fff',
     backgroundColor: "lightblue",
   },
@@ -85,13 +92,13 @@ class Room extends React.Component {
       this.setState({
         requestList: [
           {
-            requestMessage: "Reuqest1",
+            requestMessage: "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ",
             userName: "User1",
             userURL: "#userurl1",
           },
           {
-            requestMessage: "Reuqest2",
-            userName: "User2",
+            requestMessage: "一緒にマルチやろう！",
+            userName: "モンスト太郎",
             userURL: "#userurl2",
           },
         ],
@@ -231,7 +238,7 @@ class Room extends React.Component {
         ) : (
           <Grid container justify={"center"} spacing={24} className={classes.root}>
             <Grid item>
-              <Typography type="display2" gutterBottom className={classes.h1title}>
+              <Typography type="display1" gutterBottom className={classes.h1title}>
                 {this.state.roomName}
               </Typography>
             </Grid>
@@ -250,21 +257,17 @@ class Room extends React.Component {
             </Grid>
 
             <Grid item xs={12}>
-              <Divider />
-              <List>
+              <Divider className={classes.listTopDiv}/>
+              <List className={classes.list}>
                 {this.state.requestList.map((index) => {
                   const avatar = index.userName.charAt(0);
                   return (
                     <ListItem button divider component="a" href={index.userURL} key={index.userName}>
                       <Avatar className={classes.avatar}>{avatar}</Avatar>
-                      <Grid container justify={"space-between"} spacing={40}>
-                        <Grid item xs={3}>
-                          <ListItemText primary={index.userName} />
-                        </Grid>
-                        <Grid item xs={9}>
-                          <ListItemText primary={index.requestMessage} />
-                        </Grid>
-                      </Grid>
+                      <div>
+                        <Typography noWrap>{index.userName}</Typography>
+                        <Typography type="subheading">{index.requestMessage}</Typography>
+                      </div>
                     </ListItem>
                   );
                 })}
