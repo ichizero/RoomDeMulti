@@ -13,8 +13,10 @@ import org.json.JSONArray;
 
 
 public class DBManager {
-    // private static final String DB_PATH = "jdbc:sqlite:webapps/ROOT/WEB-INF/RDMDB.db";
-    private static final String DB_PATH = "jdbc:sqlite:WebContent/WEB-INF/RDMDB.db";
+    // Azure
+    private static final String DB_PATH = "jdbc:sqlite:webapps/RDMDB.db";
+    // Univ
+    // private static final String DB_PATH = "jdbc:sqlite:WebContent/WEB-INF/RDMDB.db";
 
     private Room room;//ルーム
     private User user;//ユーザ
@@ -164,6 +166,7 @@ public class DBManager {
         Connection conn = DriverManager.getConnection(DB_PATH);
         Statement stmt = conn.createStatement();
         JSONObject resultJson = new JSONObject();
+        JSONArray jArray = new JSONArray();
 
         //新しいroomをDBに追加
         String sql = "INSERT INTO rooms(roomName) VALUES ('" + roomName + "');";
@@ -176,7 +179,25 @@ public class DBManager {
         int userID = rs.getInt("userID");
         sql = "INSERT INTO requests(roomID,userID) VALUES (" + roomID + "," + userID + ");";
         stmt.executeUpdate(sql);
-        resultJson.put("roomName", roomName);
+        
+        //userの入っているroomのroomIDを取得
+        sql = "SELECT * FROM requests WHERE userID=" + userID + ";";
+        rs = stmt.executeQuery(sql);
+        ArrayList<Integer> num = new ArrayList<Integer>();
+        while (rs.next()) {
+            num.add(rs.getInt("roomID"));
+        }
+
+        for (int i = 0; i < num.size(); i++) {
+
+            //roomIDからroomNameを取る
+            sql = "SELECT * FROM rooms WHERE roomID=" + num.get(i) + ";";
+            rs = stmt.executeQuery(sql);
+            JSONObject jObj = new JSONObject();
+            jObj.put("roomName", rs.getString("roomName"));
+            jArray.put(jObj);
+        }
+        resultJson.put("roomList", jArray);
 
         rs.close();
         stmt.close();
@@ -287,9 +308,6 @@ public class DBManager {
         stmt.executeUpdate(sql);
 
         //userの入っているroomのroomIDを取得
-        sql = "SELECT * FROM users WHERE userName='" + userName + "';";
-        rs = stmt.executeQuery(sql);
-        userID = rs.getInt("userID");
         sql = "SELECT * FROM requests WHERE userID=" + userID + ";";
         rs = stmt.executeQuery(sql);
         ArrayList<Integer> num = new ArrayList<Integer>();

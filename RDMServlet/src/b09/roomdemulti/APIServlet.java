@@ -13,20 +13,21 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.sql.SQLException;
 
+
 /**
  * サーブレット実装クラス
  * 
  * @author Yuto Murakami
  */
 @WebServlet("/api")
-public class MainServlet extends HttpServlet {
+public class APIServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private DBManager dbm;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public MainServlet() {
+    public APIServlet() {
         super();
         this.dbm = new DBManager();
     }
@@ -56,8 +57,7 @@ public class MainServlet extends HttpServlet {
      * 引数に与えられた内容によって処理を分岐させ，
      * DBManagerインスタンスに処理を委譲する．
      * @return 該当する処理があればJSON形式のString
-     *         処理にエラーがあれば"Error"を含むString
-     *         処理がなければ"Error"
+     *         処理にエラーがあれば各種Exceptionを投げる
      */
     protected String branchProcessing(String func, HttpServletRequest request)
             throws Exception, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
@@ -65,10 +65,10 @@ public class MainServlet extends HttpServlet {
         // POSTパラメータから値をセット．存在しなければnull
         String userName = request.getParameter("userName"); // ユーザ名
         String password = request.getParameter("password"); // パスワード
-        String userURL = request.getParameter("userURL"); // ユーザのマルチURL
+        String userURL = request.getParameter("userURL");   // ユーザのマルチURL
         String roomName = request.getParameter("roomName"); // ルーム名
         String requestMessage = request.getParameter("requestMessage"); // リクエスト文
-        System.out.println(userName);
+
         // func によって処理を変える
         switch (func) {
         case "authenticateUser":
@@ -86,7 +86,7 @@ public class MainServlet extends HttpServlet {
         case "joinRoom":
             return this.dbm.joinRoom(roomName, userName);
         default:
-            throw new Exception("Error");
+            throw new Exception("Function not found.");
         }
     }
 }
