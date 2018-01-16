@@ -12,12 +12,9 @@ import Dialog, {
   DialogContent,
   DialogTitle,
 } from 'material-ui/Dialog';
-import Snackbar from 'material-ui/Snackbar';
-import IconButton from 'material-ui/IconButton';
 
 import PersonIcon from 'material-ui-icons/Person';
 import PersonAddIcon from 'material-ui-icons/PersonAdd';
-import CloseIcon from 'material-ui-icons/Close';
 
 
 const styles = {
@@ -43,16 +40,12 @@ class Login extends React.Component {
       newUserName: "", newPassword: "", newUserURL: "",
       isAuthenticated: props.isAuthenticated,
       isOpenDialog: false,
-      isOpenSnackBar: false,
-      snackmsg: props.snackmsg,
     });
 
     this.onOpenDialog = this.onOpenDialog.bind(this);
     this.onCloseDialog = this.onCloseDialog.bind(this);
     this.onRegisterUser = this.onRegisterUser.bind(this);
     this.onAuthenticateUser = this.onAuthenticateUser.bind(this);
-    this.onOpenSnackBar = this.onOpenSnackBar.bind(this);
-    this.onCloseSnackBar = this.onCloseSnackBar.bind(this);
   }
   
   /**
@@ -62,8 +55,6 @@ class Login extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.isAuthenticated != nextProps.isAuthenticated) {
       this.setState({ isAuthenticated: nextProps.isAuthenticated });
-    } else if (this.props.snackmsg != nextProps.snackmsg & nextProps.snackmsg !== "") {
-      this.setState({ snackmsg: nextProps.snackmsg, isOpenSnackBar: true });
     }
   }
 
@@ -113,24 +104,6 @@ class Login extends React.Component {
     if (userName !== "" && password !== "") {
       this.props.onAuthenticateUser(userName, password);
     }
-  }
-
-  /**
-   * SnackBarを表示する
-   */
-  onOpenSnackBar() {
-    this.setState({ isOpenSnackBar: true });
-  }
-
-  /**
-   * SnackBarを隠す
-   */
-  onCloseSnackBar() {
-    this.setState({
-      isOpenSnackBar: false,
-      snackmsg: ""
-    });
-    this.props.onCloseSnackBar();
   }
 
   /**
@@ -217,30 +190,6 @@ class Login extends React.Component {
                 </DialogActions>
               </Dialog>
             </div>
-            <Snackbar
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              open={this.state.isOpenSnackBar}
-              autoHideDuration={6000}
-              onClose={this.onCloseSnackBar}
-              SnackbarContentProps={{
-                'aria-describedby': 'message-id',
-              }}
-              message={<span id="message-id">{this.state.snackmsg}</span>}
-              action={
-                <IconButton
-                  key="close"
-                  aria-label="Close"
-                  color="inherit"
-                  className={classes.close}
-                  onClick={this.onCloseSnackBar}
-                >
-                  <CloseIcon />
-                </IconButton>
-              }
-            />
           </Grid>
         )
     );

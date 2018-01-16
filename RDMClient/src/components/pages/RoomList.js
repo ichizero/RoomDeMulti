@@ -18,12 +18,9 @@ import Dialog, {
   DialogTitle,
 } from 'material-ui/Dialog';
 import Typography from 'material-ui/Typography';
-import Snackbar from 'material-ui/Snackbar';
-import IconButton from 'material-ui/IconButton';
 
 import GroupIcon from 'material-ui-icons/Group';
 import GroupAddIcon from 'material-ui-icons/GroupAdd';
-import CloseIcon from 'material-ui-icons/Close';
 
 
 const styles = {
@@ -57,8 +54,6 @@ class RoomList extends React.Component {
       userName: props.userName,
       isOpenCreateDialog: false,
       isOpenJoinDialog: false,
-      isOpenSnackBar: false,
-      snackmsg: "",
       roomList: [
         {
           roomName: " ",
@@ -74,8 +69,6 @@ class RoomList extends React.Component {
     this.onCloseCreateDialog = this.onCloseCreateDialog.bind(this);
     this.onOpenJoinDialog = this.onOpenJoinDialog.bind(this);
     this.onCloseJoinDialog = this.onCloseJoinDialog.bind(this);
-    this.onOpenSnackBar = this.onOpenSnackBar.bind(this);
-    this.onCloseSnackBar = this.onCloseSnackBar.bind(this);
   }
 
   /**
@@ -97,7 +90,7 @@ class RoomList extends React.Component {
 
     this.getRoomList(this.state.userName)
       .then(res => this.setState({ roomList: res.body.roomList }))
-      .catch(err => console.log("Error: %s", err.message));
+      .catch(err => this.dispatchSnackBarMessage(err.message));
   }
 
   /**
@@ -143,15 +136,14 @@ class RoomList extends React.Component {
     const roomName = this.state.newRoomName;
 
     if (roomName.length > 10) {
-      this.setState({ snackmsg: "ルーム名は10文字以内です。" });
-      this.onOpenSnackBar();
+      this.dispatchSnackBarMessage("ルーム名は10文字以内です。");
     } else if (roomName != "") {
       request.post("/api")
         .send('func=createRoom')
         .send('roomName=' + roomName)
         .send('userName=' + userName)
         .then(res => this.setState({ roomList: res.body.roomList }))
-        .catch(err => console.log("Error: %s", err.message));
+        .catch(err => this.dispatchSnackBarMessage(err.message));
     }
 
     this.onCloseCreateDialog();
@@ -165,7 +157,7 @@ class RoomList extends React.Component {
 
     // Development環境でのダミー処理
     if (process.env.NODE_ENV !== "production") {
-      this.onCloseCreateDialog();
+      this.onCloseJoinDialog();
       return;
     }
 
@@ -173,15 +165,14 @@ class RoomList extends React.Component {
     const roomName = this.state.roomName;
 
     if (roomName.length > 10) {
-      this.setState({ snackmsg: "ルーム名は10文字以内です。" });
-      this.onOpenSnackBar();
+      this.dispatchSnackBarMessage("ルーム名は10文字以内です。");
     } else if (this.state.roomName != "") {
       request.post("/api")
         .send('func=joinRoom')
         .send('roomName=' + roomName)
         .send('userName=' + userName)
         .then(res => this.setState({ roomList: res.body.roomList }))
-        .catch(err => console.log("Error: %s", err.message));
+        .catch(err => this.dispatchSnackBarMessage(err.message));
     }
 
     this.onCloseJoinDialog();
@@ -224,18 +215,8 @@ class RoomList extends React.Component {
   /**
    * SnackBarを表示する
    */
-  onOpenSnackBar() {
-    this.setState({ isOpenSnackBar: true });
-  }
-
-  /**
-   * SnackBarを隠す
-   */
-  onCloseSnackBar() {
-    this.setState({
-      isOpenSnackBar: false,
-      snackmsg: "",
-    });
+  dispatchSnackBarMessage(message) {
+    this.props.dispatchSnackBarMessage(message);
   }
 
   /**
@@ -346,30 +327,6 @@ class RoomList extends React.Component {
                 </DialogActions>
               </Dialog>
             </div>
-            <Snackbar
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              open={this.state.isOpenSnackBar}
-              autoHideDuration={6000}
-              onClose={this.onCloseSnackBar}
-              SnackbarContentProps={{
-                'aria-describedby': 'message-id',
-              }}
-              message={<span id="message-id">{this.state.snackmsg}</span>}
-              action={
-                <IconButton
-                  key="close"
-                  aria-label="Close"
-                  color="inherit"
-                  className={classes.close}
-                  onClick={this.onCloseSnackBar}
-                >
-                  <CloseIcon />
-                </IconButton>
-              }
-            />
           </Grid>
         )
     );

@@ -8,6 +8,11 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Reboot from 'material-ui/Reboot';
 
+
+import Snackbar from 'material-ui/Snackbar';
+import IconButton from 'material-ui/IconButton';
+import CloseIcon from 'material-ui-icons/Close';
+
 import Header from './Header';
 import Login from './pages/Login';
 import RoomList from './pages/RoomList';
@@ -31,11 +36,12 @@ const styles = {
 class App extends React.Component {
   constructor(props) {
     super(props);
-
+    
     this.state = {
       isAuthenticated: false,
       userName: "",
       userURL: "",
+      isOpenSnackBar: false,
       snackmsg: "",
       cookies: new Cookies()
     };
@@ -43,6 +49,7 @@ class App extends React.Component {
     this.onRegisterUser = this.onRegisterUser.bind(this);
     this.onAuthenticateUser = this.onAuthenticateUser.bind(this);
     this.onLogout = this.onLogout.bind(this);
+    this.dispatchSnackBarMessage = this.dispatchSnackBarMessage.bind(this);
     this.onCloseSnackBar = this.onCloseSnackBar.bind(this);
   }
 
@@ -95,7 +102,7 @@ class App extends React.Component {
             userURL: res.body.userURL,
           });
         })
-        .catch(err => this.setState({ snackmsg: err.message }));
+        .catch(err => this.dispatchSnackBarMessage(err.message));
     }
   }
 
@@ -128,7 +135,7 @@ class App extends React.Component {
             userURL: res.body.userURL,
           });
         })
-        .catch(err => this.setState({ snackmsg: err.message }));
+        .catch(err => this.dispatchSnackBarMessage(err.message));
     }
   }
 
@@ -144,10 +151,23 @@ class App extends React.Component {
   }
 
   /**
+   * SnackBarを表示する
+   */
+  dispatchSnackBarMessage(message) {
+    this.setState({
+      snackmsg: message,
+      isOpenSnackBar: true,
+    });
+  }
+
+  /**
    * SnackBarを隠す
    */
   onCloseSnackBar() {
-    this.setState({ snackmsg: "" });
+    this.setState({
+      isOpenSnackBar: false,
+      snackmsg: "",
+    });
   }
 
   /**
@@ -178,8 +198,7 @@ class App extends React.Component {
                   isAuthenticated={this.state.isAuthenticated}
                   onAuthenticateUser={this.onAuthenticateUser}
                   onRegisterUser={this.onRegisterUser}
-                  snackmsg={this.state.snackmsg}
-                  onCloseSnackBar={this.onCloseSnackBar}
+                  dispatchSnackBarMessage={this.dispatchSnackBarMessage}
                 />
               }
             />
@@ -189,6 +208,7 @@ class App extends React.Component {
                 <RoomList
                   isAuthenticated={this.state.isAuthenticated}
                   userName={this.state.userName}
+                  dispatchSnackBarMessage={this.dispatchSnackBarMessage}
                 />
               }
             />
@@ -199,6 +219,7 @@ class App extends React.Component {
                   isAuthenticated={this.state.isAuthenticated}
                   userName={this.state.userName}
                   userURL={this.state.userURL}
+                  dispatchSnackBarMessage={this.dispatchSnackBarMessage}
                   {...props}
                 />
               }
@@ -206,6 +227,30 @@ class App extends React.Component {
             <Route component={NotFound} />
           </Switch>
         </main>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          open={this.state.isOpenSnackBar}
+          autoHideDuration={6000}
+          onClose={this.onCloseSnackBar}
+          SnackbarContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">{this.state.snackmsg}</span>}
+          action={
+            <IconButton
+              key="close"
+              aria-label="Close"
+              color="inherit"
+              // className={classes.close}
+              onClick={this.onCloseSnackBar}
+            >
+              <CloseIcon />
+            </IconButton>
+          }
+        />
       </div>
     );
   }

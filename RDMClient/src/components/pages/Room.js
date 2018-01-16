@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 
 import Grid from 'material-ui/Grid';
-import List, { ListItem, ListItemText } from 'material-ui/List';
+import List, { ListItem } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
@@ -18,13 +18,10 @@ import Dialog, {
   DialogTitle,
 } from 'material-ui/Dialog';
 import Typography from 'material-ui/Typography';
-import Snackbar from 'material-ui/Snackbar';
-import IconButton from 'material-ui/IconButton';
 import Avatar from 'material-ui/Avatar';
 
 import AddIcon from 'material-ui-icons/Add';
 import RefreshIcon from 'material-ui-icons/Refresh';
-import CloseIcon from 'material-ui-icons/Close';
 
 
 const styles = {
@@ -63,8 +60,6 @@ class Room extends React.Component {
       userURL: props.userURL,
       roomName: props.match.params.id,
       openDialog: false,
-      isOpenSnackBar: false,
-      snackmsg: "",
       requestList: [
         {
           requestMessage: " ",
@@ -79,8 +74,6 @@ class Room extends React.Component {
     this.onRefreshList = this.onRefreshList.bind(this);
     this.onOpenDialog = this.onOpenDialog.bind(this);
     this.onCloseDialog = this.onCloseDialog.bind(this);
-    this.onOpenSnackBar = this.onOpenSnackBar.bind(this);
-    this.onCloseSnackBar = this.onCloseSnackBar.bind(this);
   }
 
   /**
@@ -109,7 +102,7 @@ class Room extends React.Component {
 
     this.getRequestList(this.state.roomName)
       .then(res => this.setState({ requestList: res.body.requestList }))
-      .catch(err => console.log("Error: %s", err.message));
+      .catch(err => this.dispatchSnackBarMessage(err.message));
   }
 
   /**
@@ -176,8 +169,7 @@ class Room extends React.Component {
     const requestMessage = this.state.requestMessage;
 
     if (requestMessage.length > 20) {
-      this.setState({ snackmsg: "募集文は20文字以内です。" });
-      this.onOpenSnackBar();
+      this.dispatchSnackBarMessage("募集文は20文字以内です。");
     } else if (requestMessage !== "") {
       request.post("/api")
         .send('func=addRequest')
@@ -186,7 +178,7 @@ class Room extends React.Component {
         .send('roomName=' + roomName)
         .send('requestMessage=' + requestMessage)
         .then(res => this.setState({ requestList: res.body.requestList }))
-        .catch(err => console.log("Error: %s", err.message));
+        .catch(err => this.dispatchSnackBarMessage(err.message));
     }
 
     this.onCloseDialog();
@@ -205,24 +197,14 @@ class Room extends React.Component {
 
     this.getRequestList(this.state.roomName)
       .then(res => this.setState({ requestList: res.body.requestList }))
-      .catch(err => console.log("Error: %s", err.message));
+      .catch(err => this.dispatchSnackBarMessage(err.message));
   }
 
   /**
    * SnackBarを表示する
    */
-  onOpenSnackBar() {
-    this.setState({ isOpenSnackBar: true });
-  }
-
-  /**
-   * SnackBarを隠す
-   */
-  onCloseSnackBar() {
-    this.setState({
-      isOpenSnackBar: false,
-      snackmsg: "",
-    });
+  dispatchSnackBarMessage(message) {
+    this.props.dispatchSnackBarMessage(message);
   }
 
   /**
@@ -306,30 +288,6 @@ class Room extends React.Component {
                 </DialogActions>
               </Dialog>
             </div>
-            <Snackbar
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              open={this.state.isOpenSnackBar}
-              autoHideDuration={6000}
-              onClose={this.onCloseSnackBar}
-              SnackbarContentProps={{
-                'aria-describedby': 'message-id',
-              }}
-              message={<span id="message-id">{this.state.snackmsg}</span>}
-              action={
-                <IconButton
-                  key="close"
-                  aria-label="Close"
-                  color="inherit"
-                  className={classes.close}
-                  onClick={this.onCloseSnackBar}
-                >
-                  <CloseIcon />
-                </IconButton>
-              }
-            />
           </Grid>
         )
     );
