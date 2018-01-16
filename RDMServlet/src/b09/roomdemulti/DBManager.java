@@ -13,7 +13,7 @@ import org.json.JSONArray;
 
 
 public class DBManager {
-    // private static final String DB_PATH = "jdbc:sqlite:webapps/ROOT/WEB-INF/database.db";
+    // private static final String DB_PATH = "jdbc:sqlite:webapps/ROOT/WEB-INF/RDMDB.db";
     private static final String DB_PATH = "jdbc:sqlite:WebContent/WEB-INF/RDMDB.db";
 
     private Room room;//ルーム
@@ -114,7 +114,6 @@ public class DBManager {
         Statement stmt = conn.createStatement();
         JSONObject resultJson = new JSONObject();
         JSONArray jArray = new JSONArray();
-
         //userの入っているroomのroomIDを取得
         String sql = "SELECT * FROM users WHERE userName='" + userName + "';";
         ResultSet rs = stmt.executeQuery(sql);
@@ -131,7 +130,9 @@ public class DBManager {
             //roomIDからroomNameを取る
             sql = "SELECT * FROM rooms WHERE roomID=" + num.get(i) + ";";
             rs = stmt.executeQuery(sql);
-            jArray.put(rs.getString("roomName"));
+            JSONObject jObj = new JSONObject();
+            jObj.put("roomName", rs.getString("roomName"));
+            jArray.put(jObj);
         }
         resultJson.put("roomList", jArray);
 
@@ -263,6 +264,7 @@ public class DBManager {
         int userID;
         int count = 0;
         JSONObject resultJson = new JSONObject();
+        JSONArray jArray = new JSONArray();
         Statement stmt = conn.createStatement();
 
         String sql = "SELECT * FROM rooms WHERE roomName='" + roomName + "';";
@@ -283,7 +285,28 @@ public class DBManager {
         //roomIDとuserIDを紐付けるためにrequestsに追加
         sql = "INSERT INTO requests (roomID,userID) VALUES (" + roomID + "," + userID + ");";
         stmt.executeUpdate(sql);
-        resultJson.put("roomName", roomName);
+
+        //userの入っているroomのroomIDを取得
+        sql = "SELECT * FROM users WHERE userName='" + userName + "';";
+        rs = stmt.executeQuery(sql);
+        userID = rs.getInt("userID");
+        sql = "SELECT * FROM requests WHERE userID=" + userID + ";";
+        rs = stmt.executeQuery(sql);
+        ArrayList<Integer> num = new ArrayList<Integer>();
+        while (rs.next()) {
+            num.add(rs.getInt("roomID"));
+        }
+
+        for (int i = 0; i < num.size(); i++) {
+
+            //roomIDからroomNameを取る
+            sql = "SELECT * FROM rooms WHERE roomID=" + num.get(i) + ";";
+            rs = stmt.executeQuery(sql);
+            JSONObject jObj = new JSONObject();
+            jObj.put("roomName", rs.getString("roomName"));
+            jArray.put(jObj);
+        }
+        resultJson.put("roomList", jArray);
 
         rs.close();
         stmt.close();

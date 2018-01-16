@@ -20,6 +20,7 @@ import Dialog, {
 import Typography from 'material-ui/Typography';
 import Snackbar from 'material-ui/Snackbar';
 import IconButton from 'material-ui/IconButton';
+import Avatar from 'material-ui/Avatar';
 
 import AddIcon from 'material-ui-icons/Add';
 import RefreshIcon from 'material-ui-icons/Refresh';
@@ -34,6 +35,11 @@ const styles = {
   h1title: {
     paddingTop: "24px",
   },
+  avatar: {
+    marginRight: 10,
+    color: '#fff',
+    backgroundColor: "lightblue",
+  },
 };
 
 
@@ -46,7 +52,8 @@ class Room extends React.Component {
 
     this.state = ({
       isAuthenticated: props.isAuthenticated,
-      cookies: props.cookies,
+      userName: props.userName,
+      userURL: props.userURL,
       roomName: props.match.params.id,
       openDialog: false,
       isOpenSnackBar: false,
@@ -73,12 +80,6 @@ class Room extends React.Component {
    * コンポーネントがマウントされた後に呼び出される
    */
   componentDidMount() {
-    this.setState({
-      userName: this.state.cookies.get('userName'),
-      userURL: this.state.cookies.get('userURL'),
-    });
-
-
     // Development環境でのダミー処理
     if (process.env.NODE_ENV !== "production") {
       this.setState({
@@ -111,8 +112,10 @@ class Room extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.isAuthenticated != nextProps.isAuthenticated) {
       this.setState({ isAuthenticated: nextProps.isAuthenticated });
-    } else if (this.props.cookies != nextProps.cookies) {
-      this.setState({ cookies: nextProps.cookies });
+    } else if (this.props.userName != nextProps.userName) {
+      this.setState({ userName: nextProps.userName });
+    } else if (this.props.userURL != nextProps.userURL) {
+      this.setState({ userName: nextProps.userURL });
     }
   }
 
@@ -250,10 +253,18 @@ class Room extends React.Component {
               <Divider />
               <List>
                 {this.state.requestList.map((index) => {
+                  const avatar = index.userName.charAt(0);
                   return (
                     <ListItem button divider component="a" href={index.userURL} key={index.userName}>
-                      <ListItemText primary={index.userName} />
-                      <ListItemText primary={index.requestMessage} />
+                      <Avatar className={classes.avatar}>{avatar}</Avatar>
+                      <Grid container justify={"space-between"} spacing={40}>
+                        <Grid item xs={3}>
+                          <ListItemText primary={index.userName} />
+                        </Grid>
+                        <Grid item xs={9}>
+                          <ListItemText primary={index.requestMessage} />
+                        </Grid>
+                      </Grid>
                     </ListItem>
                   );
                 })}

@@ -19,7 +19,7 @@ import b09.roomdemulti.DBMTest;
 /**
  * デモ用
  */
-@WebServlet("/api")
+@WebServlet("/demo")
 public class DemoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

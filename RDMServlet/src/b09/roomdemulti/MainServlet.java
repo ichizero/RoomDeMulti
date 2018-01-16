@@ -18,7 +18,7 @@ import java.sql.SQLException;
  * 
  * @author Yuto Murakami
  */
-@WebServlet("/test")
+@WebServlet("/api")
 public class MainServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private DBManager dbm;
@@ -68,7 +68,7 @@ public class MainServlet extends HttpServlet {
         String userURL = request.getParameter("userURL"); // ユーザのマルチURL
         String roomName = request.getParameter("roomName"); // ルーム名
         String requestMessage = request.getParameter("requestMessage"); // リクエスト文
-
+        System.out.println(userName);
         // func によって処理を変える
         switch (func) {
         case "authenticateUser":

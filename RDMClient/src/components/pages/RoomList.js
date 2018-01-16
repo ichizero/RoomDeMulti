@@ -43,7 +43,7 @@ class RoomList extends React.Component {
 
     this.state = ({
       isAuthenticated: props.isAuthenticated,
-      cookies: props.cookies,
+      userName: props.userName,
       isOpenCreateDialog: false,
       isOpenJoinDialog: false,
       isOpenSnackBar: false,
@@ -71,10 +71,6 @@ class RoomList extends React.Component {
    * コンポーネントがマウントされた後に呼び出される
    */
   componentDidMount() {
-    this.setState({
-      userName: this.state.cookies.get('userName'),
-    });
-
     // Development環境でのダミー処理
     if (process.env.NODE_ENV !== "production") {
       this.setState({
@@ -100,8 +96,8 @@ class RoomList extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.isAuthenticated != nextProps.isAuthenticated) {
       this.setState({ isAuthenticated: nextProps.isAuthenticated });
-    } else if (this.props.cookies != nextProps.cookies) {
-      this.setState({ cookies: nextProps.cookies });
+    } else if (this.props.userName != nextProps.userName) {
+      this.setState({ userName: nextProps.userName });
     }
   }
 

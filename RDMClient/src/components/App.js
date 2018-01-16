@@ -34,6 +34,8 @@ class App extends React.Component {
 
     this.state = {
       isAuthenticated: false,
+      userName: "",
+      userURL: "",
       snackmsg: "",
       cookies: new Cookies()
     };
@@ -49,7 +51,11 @@ class App extends React.Component {
    */
   componentWillMount() {
     if (this.state.cookies.get('userName') != null) {
-      this.setState({ isAuthenticated: true });
+      this.setState({
+        isAuthenticated: true,
+        userName: this.state.cookies.get('userName'),
+        userURL: this.state.cookies.get('userURL'),
+      });
     } else {
       this.setState({ isAuthenticated: false });
     }
@@ -83,7 +89,11 @@ class App extends React.Component {
         .then(res => {
           this.state.cookies.set('userName', res.body.userName, { path: '/' });
           this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
-          this.setState({ isAuthenticated: true });
+          this.setState({
+            isAuthenticated: true,
+            userName: res.body.userName,
+            userURL: res.body.userURL,
+          });
         })
         .catch(err => this.setState({ snackmsg: err.message }));
     }
@@ -112,7 +122,11 @@ class App extends React.Component {
         .then(res => {
           this.state.cookies.set('userName', res.body.userName, { path: '/' });
           this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
-          this.setState({ isAuthenticated: true });
+          this.setState({
+            isAuthenticated: true,
+            userName: res.body.userName,
+            userURL: res.body.userURL,
+          });
         })
         .catch(err => this.setState({ snackmsg: err.message }));
     }
@@ -174,7 +188,7 @@ class App extends React.Component {
               render={() =>
                 <RoomList
                   isAuthenticated={this.state.isAuthenticated}
-                  cookies={this.state.cookies}
+                  userName={this.state.userName}
                 />
               }
             />
@@ -183,7 +197,8 @@ class App extends React.Component {
               render={props =>
                 <Room
                   isAuthenticated={this.state.isAuthenticated}
-                  cookies={this.state.cookies}
+                  userName={this.state.userName}
+                  userURL={this.state.userURL}
                   {...props}
                 />
               }

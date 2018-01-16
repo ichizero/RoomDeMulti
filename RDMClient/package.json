@@ -6,7 +6,7 @@
   "license": "",
   "scripts": {
     "dev": "webpack-dev-server --hot --inline",
-    "watch": "webpack --watch --progress",
+    "watch": "webpack --watch --progress --config webpack.prod.js",
     "build": "webpack --config webpack.prod.js"
   },
   "devDependencies": {
