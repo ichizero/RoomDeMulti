@@ -168,8 +168,8 @@ class Room extends React.Component {
     const roomName = this.state.roomName;
     const requestMessage = this.state.requestMessage;
 
-    if (requestMessage.length > 20) {
-      this.dispatchSnackBarMessage("募集文は20文字以内です。");
+    if (requestMessage.length > 50) {
+      this.dispatchSnackBarMessage("募集文は50文字以内です。");
     } else if (requestMessage !== "") {
       request.post("/api")
         .send('func=addRequest')
