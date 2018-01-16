@@ -135,6 +135,7 @@ public class DBManager {
         }
         resultJson.put("roomList", jArray);
 
+        rs.close();
         stmt.close();
 
         if (conn != null) {
@@ -176,6 +177,7 @@ public class DBManager {
         stmt.executeUpdate(sql);
         resultJson.put("roomName", roomName);
 
+        rs.close();
         stmt.close();
 
         if (conn != null) {
@@ -208,24 +210,31 @@ public class DBManager {
         ResultSet rs = stmt.executeQuery(sql);
         roomID = rs.getInt("roomID");
 
-        sql = "SELECT * FROM requests WHERE roomID=" + roomID + "ORDER BY date DESC;";
+        sql = "SELECT * FROM requests WHERE roomID=" + roomID + " AND requestText IS NOT NULL ORDER BY time DESC;";
         rs = stmt.executeQuery(sql);
 
         jArray = new JSONArray();
-        while (rs.next()) {
-            userID = rs.getInt("userID");
-            sql = "SELECT * FROM users WHERE userID='" + userID + "';";
-            ResultSet rs2 = stmt.executeQuery(sql);
+        ArrayList<Integer> num = new ArrayList<Integer>();
+        ArrayList<String> text = new ArrayList<String>();
+        while (rs.next()){        
+            num.add(rs.getInt("userID"));
+            text.add(rs.getString("requestText"));
+        }
+
+        for(int i=0;i < num.size();i++){
+            sql = "SELECT * FROM users WHERE userID=" + num.get(i) + ";";
+            rs = stmt.executeQuery(sql);
             resultJson = new JSONObject();
-            resultJson.put("userName", rs2.getString("userName"));
-            resultJson.put("userURL", rs2.getString("userURL"));
-            resultJson.put("requestMessage", rs.getString("requestText"));
+            resultJson.put("userName", rs.getString("userName"));
+            resultJson.put("userURL", rs.getString("userURL"));
+            resultJson.put("requestMessage", text.get(i));
             jArray.put(resultJson);
         }
 
         resultJson = new JSONObject();
         resultJson.put("requestList", jArray);
 
+        rs.close();
         stmt.close();
 
         if (conn != null) {
@@ -252,6 +261,7 @@ public class DBManager {
 
         int roomID;
         int userID;
+        int count = 0;
         JSONObject resultJson = new JSONObject();
         Statement stmt = conn.createStatement();
 
@@ -259,13 +269,23 @@ public class DBManager {
         ResultSet rs = stmt.executeQuery(sql);
         roomID = rs.getInt("roomID");
         sql = "SELECT * FROM users WHERE userName='" + userName + "';";
+        rs = stmt.executeQuery(sql);
         userID = rs.getInt("userID");
+
+        sql = "SELECT COUNT(*) FROM requests WHERE roomID=" + roomID + " AND userID=" + userID + ";";
+        rs = stmt.executeQuery(sql);
+        count = rs.getInt(1);
+
+        if(count==1){
+            throw new Exception("User is already in this room.");
+        }
 
         //roomIDとuserIDを紐付けるためにrequestsに追加
         sql = "INSERT INTO requests (roomID,userID) VALUES (" + roomID + "," + userID + ");";
         stmt.executeUpdate(sql);
         resultJson.put("roomName", roomName);
 
+        rs.close();
         stmt.close();
 
         if (conn != null) {
@@ -296,6 +316,7 @@ public class DBManager {
         JSONObject resultJson;
         JSONArray jArray;
 
+
         Statement stmt = conn.createStatement();
         long time = System.currentTimeMillis();
 
@@ -303,36 +324,47 @@ public class DBManager {
         ResultSet rs = stmt.executeQuery(sql);
         roomID = rs.getInt("roomID");
         sql = "SELECT * FROM users WHERE userName='" + userName + "';";
+        rs = stmt.executeQuery(sql);
         userID = rs.getInt("userID");
 
         //update
-        sql = "UPDATE requests SET requestText='" + requestMessage + ",time=" + time + "' WHERE roomID=" + roomID
-                + " and userID=" + userID + ";";
+        sql = "UPDATE requests SET requestText='" + requestMessage + "',time=" + time + " WHERE roomID=" + roomID
+                + " AND userID=" + userID + ";";
         stmt.executeUpdate(sql);
 
-        sql = "SELECT * FROM requests WHERE roomID=" + roomID + "ORDER BY date DESC;";
+        sql = "SELECT * FROM requests WHERE roomID=" + roomID + " AND requestText IS NOT NULL ORDER BY time DESC;";
         rs = stmt.executeQuery(sql);
 
         jArray = new JSONArray();
-        while (rs.next()) {
-            userID = rs.getInt("userID");
-            sql = "SELECT * FROM users WHERE userID='" + userID + "';";
-            ResultSet rs2 = stmt.executeQuery(sql);
+        ArrayList<Integer> num = new ArrayList<Integer>();
+        ArrayList<String> text = new ArrayList<String>();
+        while (rs.next()){
+            if(rs.getString("requestText") != null){
+                num.add(rs.getInt("userID"));
+                text.add(rs.getString("requestText"));
+            }
+        }
+
+        for(int i=0;i < num.size();i++){
+            sql = "SELECT * FROM users WHERE userID=" + num.get(i) + ";";
+            rs = stmt.executeQuery(sql);
             resultJson = new JSONObject();
-            resultJson.put("userName", rs2.getString("userName"));
-            resultJson.put("userURL", rs2.getString("userURL"));
-            resultJson.put("requestMessage", rs.getString("requestText"));
+            resultJson.put("userName", rs.getString("userName"));
+            resultJson.put("userURL", rs.getString("userURL")); 
+            resultJson.put("requestMessage", text.get(i));
             jArray.put(resultJson);
         }
 
         resultJson = new JSONObject();
         resultJson.put("requestList", jArray);
 
+        rs.close();
         stmt.close();
 
         if (conn != null) {
             conn.close();
         }
+
         return resultJson.toString();
     }
 

@@ -1,18 +1,41 @@
 #!/bin/bash
 
-loop=1
+function usage() {
+    cat <<EOF
+Usage:
+  $0 [Options]
 
-while [ $loop = 1 ]
-do
+Options:
+  compile | -C    ソースをコンパイルします
+  run     | -R    AppServerを起動します
+  makeWar | -MW   WARファイルを作成します
+  runWar  | -RW   WarServerを起動します
+
+EOF
+    exit 1
+}
+
+if [ "$#" != 1 ]
+then
+    usage
+else
     case $1 in
-        compile) javac -d WebContent/WEB-INF/classes -cp "lib/*" src/b09/roomdemulti/*.java
-        loop=0
+        compile | -C)
+            javac -d WebContent/WEB-INF/classes -cp "lib/*" src/b09/roomdemulti/*.java
         ;;
-        run) java -cp "lib/*:bin/classes" server.AppServer 8080 / WebContent
-        loop=0
+        run | -R)
+            java -cp "lib/*:bin/classes" server.AppServer 8080 / WebContent
         ;;
-        makeWar) jar cvf ROOT.war -C WebContent .
-        loop=0
+        makeWar | -MW)
+            jar cvf ROOT.war -C WebContent .
+        ;;
+        runWar | -RW)
+            java -cp "lib/*:bin/classes" server.WarServer 8080 / ROOT.war
+        ;;
+        *)
+            echo "Error: Invalid option '$1'"
+            usage
+            exit 1
         ;;
     esac
-done
+fi
