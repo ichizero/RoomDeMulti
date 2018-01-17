@@ -10,6 +10,7 @@ import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import FaceIcon from 'material-ui-icons/Face';
+import ExitIcon from 'material-ui-icons/ExitToApp';
 
 
 const styles = {
@@ -78,7 +79,9 @@ class Header extends React.Component {
               </Link>
             </Typography>
             {isAuthenticated && (
-              <Button color="accent" onClick={this.onLogout} >ログアウト</Button>
+              <IconButton color="accent" aria-label="Logout" onClick={this.onLogout}>
+                <ExitIcon />
+              </IconButton>
             )}
           </Toolbar>
         </AppBar>

@@ -36,7 +36,7 @@ const styles = {
 class App extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       isAuthenticated: false,
       userName: "",
@@ -84,9 +84,9 @@ class App extends React.Component {
     }
 
     if (userName.length > 10 | password.length > 10) {
-      this.setState({ snackmsg: "ユーザ名、パスワードは10文字以内です。" });
+      this.dispatchSnackBarMessage("ユーザ名、パスワードは10文字以内");
     } else if (userURL.length > 100) {
-      this.setState({ snackmsg: "マルチURLに誤りがあります。" });
+      this.dispatchSnackBarMessage("マルチURLに誤りがあります。");
     } else {
       request.post("/api")
         .send('func=registerUser')
@@ -101,6 +101,7 @@ class App extends React.Component {
             userName: res.body.userName,
             userURL: res.body.userURL,
           });
+          this.dispatchSnackBarMessage("登録、ログインしました。");
         })
         .catch(err => this.dispatchSnackBarMessage(err.message));
     }
@@ -120,7 +121,7 @@ class App extends React.Component {
     }
 
     if (userName.length > 10 | password.length > 10) {
-      this.setState({ snackmsg: "ユーザ名、パスワードは10文字以内です。" });
+      this.dispatchSnackBarMessage("ユーザ名、パスワードは10文字以内");
     } else {
       request.post("/api")
         .send('func=authenticateUser')
@@ -134,6 +135,7 @@ class App extends React.Component {
             userName: res.body.userName,
             userURL: res.body.userURL,
           });
+          this.dispatchSnackBarMessage("ログインしました。");
         })
         .catch(err => this.dispatchSnackBarMessage(err.message));
     }
@@ -148,6 +150,7 @@ class App extends React.Component {
       this.state.cookies.remove('userURL');
       this.setState({ isAuthenticated: false });
     }
+    this.dispatchSnackBarMessage("ログアウトしました。");
   }
 
   /**
