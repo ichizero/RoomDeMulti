@@ -43,7 +43,8 @@ class App extends React.Component {
       userURL: "",
       isOpenSnackBar: false,
       snackmsg: "",
-      cookies: new Cookies()
+      cookies: new Cookies(),
+      apiURL: "/B09/api",
     };
 
     this.onRegisterUser = this.onRegisterUser.bind(this);
@@ -88,7 +89,7 @@ class App extends React.Component {
     } else if (userURL.length > 100) {
       this.dispatchSnackBarMessage("マルチURLに誤りがあります。");
     } else {
-      request.post("/api")
+      request.post(this.state.apiURL)
         .send('func=registerUser')
         .send('userName=' + userName)
         .send("password=" + password)
@@ -123,7 +124,7 @@ class App extends React.Component {
     if (userName.length > 10 | password.length > 10) {
       this.dispatchSnackBarMessage("ユーザ名、パスワードは10文字以内");
     } else {
-      request.post("/api")
+      request.post(this.state.apiURL)
         .send('func=authenticateUser')
         .send('userName=' + userName)
         .send("password=" + password)
@@ -183,7 +184,7 @@ class App extends React.Component {
       <div>
         <Reboot />
         <Route
-          path="/"
+          path="/B09/"
           render={props =>
             <Header
               isAuthenticated={this.state.isAuthenticated}
@@ -195,7 +196,7 @@ class App extends React.Component {
         <main role="main" className={classes.container}>
           <Switch>
             <Route
-              exact path="/"
+              exact path="/B09/"
               render={() =>
                 <Login
                   isAuthenticated={this.state.isAuthenticated}
@@ -206,7 +207,7 @@ class App extends React.Component {
               }
             />
             <Route
-              exact path="/room"
+              exact path="/B09/room"
               render={() =>
                 <RoomList
                   isAuthenticated={this.state.isAuthenticated}
@@ -216,7 +217,7 @@ class App extends React.Component {
               }
             />
             <Route
-              path="/room/:id"
+              path="/B09/room/:id"
               render={props =>
                 <Room
                   isAuthenticated={this.state.isAuthenticated}

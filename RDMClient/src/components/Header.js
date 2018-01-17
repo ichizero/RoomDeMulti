@@ -56,7 +56,7 @@ class Header extends React.Component {
     e.preventDefault();
 
     this.props.onLogout();
-    this.props.history.push('/');
+    this.props.history.push('/B09/');
   }
 
   /**

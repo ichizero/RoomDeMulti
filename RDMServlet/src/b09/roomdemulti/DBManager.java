@@ -14,9 +14,9 @@ import org.json.JSONArray;
 
 public class DBManager {
     // Azure
-    private static final String DB_PATH = "jdbc:sqlite:webapps/RDMDB.db";
+    // private static final String DB_PATH = "jdbc:sqlite:webapps/RDMDB.db";
     // Univ
-    // private static final String DB_PATH = "jdbc:sqlite:WebContent/WEB-INF/RDMDB.db";
+    private String DB_PATH = "jdbc:sqlite:project/B09/RDMDB.db";
 
     private Room room;//ルーム
     private User user;//ユーザ
