@@ -61,8 +61,10 @@ class RoomList extends React.Component {
       ],
       roomName: "",
       newRoomName: "",
+      apiURL: "/B09/api",
     });
 
+    this.getRoomList = this.getRoomList.bind(this);
     this.onCreateRoom = this.onCreateRoom.bind(this);
     this.onJoinRoom = this.onJoinRoom.bind(this);
     this.onOpenCreateDialog = this.onOpenCreateDialog.bind(this);
@@ -115,7 +117,7 @@ class RoomList extends React.Component {
       return;
     }
 
-    return request.post("/api")
+    return request.post(this.state.apiURL)
       .send('func=getRoomList')
       .send('userName=' + userName);
   }
@@ -138,7 +140,7 @@ class RoomList extends React.Component {
     if (roomName.length > 10) {
       this.dispatchSnackBarMessage("ルーム名は10文字以内です。");
     } else if (roomName != "") {
-      request.post("/api")
+      request.post(this.state.apiURL)
         .send('func=createRoom')
         .send('roomName=' + roomName)
         .send('userName=' + userName)
@@ -167,7 +169,7 @@ class RoomList extends React.Component {
     if (roomName.length > 10) {
       this.dispatchSnackBarMessage("ルーム名は10文字以内です。");
     } else if (this.state.roomName != "") {
-      request.post("/api")
+      request.post(this.state.apiURL)
         .send('func=joinRoom')
         .send('roomName=' + roomName)
         .send('userName=' + userName)
@@ -228,7 +230,7 @@ class RoomList extends React.Component {
     return (
       !(this.state.isAuthenticated) ?
         (
-          <Redirect to="/" />
+          <Redirect to="/B09" />
         ) : (
           <Grid container justify={"center"} spacing={24} className={classes.root}>
             <Grid item>
@@ -253,7 +255,7 @@ class RoomList extends React.Component {
               <List className={classes.list}>
                 {this.state.roomList.map((index) => {
                   return (
-                    <ListItem className={classes.roomItem} button divider component="a" href={"/room/" + index.roomName} key={index.roomName} >
+                    <ListItem className={classes.roomItem} button divider component="a" href={"/B09/room/" + index.roomName} key={index.roomName} >
                       <ListItemText primary={index.roomName} />
                     </ListItem>
                   );

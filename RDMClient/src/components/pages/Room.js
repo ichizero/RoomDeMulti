@@ -68,8 +68,10 @@ class Room extends React.Component {
         },
       ],
       requestMessage: "",
+      apiURL: "/B09/api"
     });
 
+    this.getRequestList = this.getRequestList.bind(this);
     this.onAddRequest = this.onAddRequest.bind(this);
     this.onRefreshList = this.onRefreshList.bind(this);
     this.onOpenDialog = this.onOpenDialog.bind(this);
@@ -146,7 +148,7 @@ class Room extends React.Component {
       return;
     }
 
-    return request.post("/api")
+    return request.post(this.state.apiURL)
       .send('func=getRequest')
       .send('roomName=' + roomName);
   }
@@ -171,7 +173,7 @@ class Room extends React.Component {
     if (requestMessage.length > 50) {
       this.dispatchSnackBarMessage("募集文は50文字以内です。");
     } else if (requestMessage !== "") {
-      request.post("/api")
+      request.post(this.state.apiURL)
         .send('func=addRequest')
         .send('userName=' + userName)
         .send('userURL=' + userURL)
@@ -216,7 +218,7 @@ class Room extends React.Component {
     return (
       !(this.state.isAuthenticated) ?
         (
-          <Redirect to="/" />
+          <Redirect to="/B09" />
         ) : (
           <Grid container justify={"center"} spacing={24} className={classes.root}>
             <Grid item>
