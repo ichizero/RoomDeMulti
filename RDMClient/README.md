@@ -16,6 +16,7 @@ echo "export PATH=\$HOME/.nodebrew/current/bin:\$PATH" >> ~/.bash_profile
 
 source ~/.bash_profile
 ```
+
 ### Node.js(とnpm)をインストール
 ```bash
 nodebrew install-binary stable
@@ -35,6 +36,8 @@ npm install
 コンパイルはされるが、生成コードはメモリ上に展開される。
 ファイル生成する場合は、後述のビルドを実行する。
 
+Development環境
+
 ```bash
 npm run dev
 ```
@@ -42,13 +45,29 @@ npm run dev
 ### ビルド
 src配下のjsをコンパイルし、distディレクトリにbundle.jsとして出力する。
 
+Production環境
+
 ```bash
 npm run build
 ```
 
-### Servletへ
-WebContent配下に、dist配下のindex.htmlとbundle.jsを配置する。
+ファイル監視して自動ビルドする場合は以下。
 
 ```bash
-mv ./dist/bundle.js ../RDMServlet/WebContent/bundle.js
+npm run watch
+```
+
+### RDMServletへ
+RDMServlet/WebContent配下に、RDMClient/dist配下のindex.htmlとbundle.jsを配置する。
+
+```bash
+npm run cp
+```
+
+## 各環境への対応
+
+App.jsのステートrootPathを変更することで各環境に対応。
+
+```javascript
+rootPath: "/",  // Azure & local: "/", Univ: "/B09/"
 ```

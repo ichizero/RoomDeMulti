@@ -8,9 +8,9 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Reboot from 'material-ui/Reboot';
 
-
 import Snackbar from 'material-ui/Snackbar';
 import IconButton from 'material-ui/IconButton';
+
 import CloseIcon from 'material-ui-icons/Close';
 
 import Header from './Header';
@@ -38,13 +38,13 @@ class App extends React.Component {
     super(props);
 
     this.state = {
+      rootPath: "/",  // Azure & local: "/", Univ: "/B09/"
       isAuthenticated: false,
       userName: "",
       userURL: "",
       isOpenSnackBar: false,
       snackmsg: "",
       cookies: new Cookies(),
-      apiURL: "/B09/api",
     };
 
     this.onRegisterUser = this.onRegisterUser.bind(this);
@@ -78,31 +78,31 @@ class App extends React.Component {
   onRegisterUser(userName, password, userURL) {
     // Development環境でのダミー処理
     if (process.env.NODE_ENV !== "production") {
-      this.state.cookies.set('userName', userName, { path: '/' });
-      this.state.cookies.set('userURL', userURL, { path: '/' });
+      this.state.cookies.set('userName', userName, { path: this.state.rootPath });
+      this.state.cookies.set('userURL', userURL, { path: this.state.rootPath });
       this.setState({ isAuthenticated: true });
       return;
     }
 
     if (userName.length > 10 | password.length > 10) {
       this.dispatchSnackBarMessage("ユーザ名、パスワードは10文字以内");
-    } else if (userURL.length > 100) {
+    } else if (userURL.length > 100 || !userURL.match(/^(https?|ftp)(:\/\/[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+)$/)) {
       this.dispatchSnackBarMessage("マルチURLに誤りがあります。");
     } else {
-      request.post(this.state.apiURL)
+      request.post(this.state.rootPath + "api")
         .send('func=registerUser')
         .send('userName=' + userName)
         .send("password=" + password)
         .send("userURL=" + userURL)
         .then(res => {
-          this.state.cookies.set('userName', res.body.userName, { path: '/' });
-          this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
+          this.state.cookies.set('userName', res.body.userName, { path: this.state.rootPath });
+          this.state.cookies.set('userURL', res.body.userURL, { path: this.state.rootPath });
           this.setState({
             isAuthenticated: true,
             userName: res.body.userName,
             userURL: res.body.userURL,
           });
-          this.dispatchSnackBarMessage("登録、ログインしました。");
+          this.dispatchSnackBarMessage("登録成功。ログインしました。");
         })
         .catch(err => this.dispatchSnackBarMessage(err.message));
     }
@@ -116,7 +116,7 @@ class App extends React.Component {
   onAuthenticateUser(userName, password) {
     // Development環境でのダミー処理
     if (process.env.NODE_ENV !== "production") {
-      this.state.cookies.set('userName', userName, { path: '/' });
+      this.state.cookies.set('userName', userName, { path: this.state.rootPath });
       this.setState({ isAuthenticated: true });
       return;
     }
@@ -124,13 +124,13 @@ class App extends React.Component {
     if (userName.length > 10 | password.length > 10) {
       this.dispatchSnackBarMessage("ユーザ名、パスワードは10文字以内");
     } else {
-      request.post(this.state.apiURL)
+      request.post(this.state.rootPath + "api")
         .send('func=authenticateUser')
         .send('userName=' + userName)
         .send("password=" + password)
         .then(res => {
-          this.state.cookies.set('userName', res.body.userName, { path: '/' });
-          this.state.cookies.set('userURL', res.body.userURL, { path: '/' });
+          this.state.cookies.set('userName', res.body.userName, { path: this.state.rootPath });
+          this.state.cookies.set('userURL', res.body.userURL, { path: this.state.rootPath });
           this.setState({
             isAuthenticated: true,
             userName: res.body.userName,
@@ -179,15 +179,21 @@ class App extends React.Component {
    */
   render() {
     const { classes } = this.props;
+    const {
+      rootPath, isAuthenticated,
+      userName, userURL,
+      snackmsg, isOpenSnackBar
+    } = this.state;
 
     return (
       <div>
         <Reboot />
         <Route
-          path="/B09/"
+          path={rootPath}
           render={props =>
             <Header
-              isAuthenticated={this.state.isAuthenticated}
+              rootPath={rootPath}
+              isAuthenticated={isAuthenticated}
               onLogout={this.onLogout}
               {...props}
             />
@@ -196,10 +202,11 @@ class App extends React.Component {
         <main role="main" className={classes.container}>
           <Switch>
             <Route
-              exact path="/B09/"
+              exact path={rootPath}
               render={() =>
                 <Login
-                  isAuthenticated={this.state.isAuthenticated}
+                  rootPath={rootPath}
+                  isAuthenticated={isAuthenticated}
                   onAuthenticateUser={this.onAuthenticateUser}
                   onRegisterUser={this.onRegisterUser}
                   dispatchSnackBarMessage={this.dispatchSnackBarMessage}
@@ -207,22 +214,24 @@ class App extends React.Component {
               }
             />
             <Route
-              exact path="/B09/room"
+              exact path={rootPath + "room"}
               render={() =>
                 <RoomList
-                  isAuthenticated={this.state.isAuthenticated}
+                  rootPath={rootPath}
+                  isAuthenticated={isAuthenticated}
                   userName={this.state.userName}
                   dispatchSnackBarMessage={this.dispatchSnackBarMessage}
                 />
               }
             />
             <Route
-              path="/B09/room/:id"
+              path={rootPath + "room/:id"}
               render={props =>
                 <Room
-                  isAuthenticated={this.state.isAuthenticated}
-                  userName={this.state.userName}
-                  userURL={this.state.userURL}
+                  rootPath={rootPath}
+                  isAuthenticated={isAuthenticated}
+                  userName={userName}
+                  userURL={userURL}
                   dispatchSnackBarMessage={this.dispatchSnackBarMessage}
                   {...props}
                 />
@@ -236,19 +245,18 @@ class App extends React.Component {
             vertical: 'bottom',
             horizontal: 'left',
           }}
-          open={this.state.isOpenSnackBar}
+          open={isOpenSnackBar}
           autoHideDuration={6000}
           onClose={this.onCloseSnackBar}
           SnackbarContentProps={{
             'aria-describedby': 'message-id',
           }}
-          message={<span id="message-id">{this.state.snackmsg}</span>}
+          message={<span id="message-id">{snackmsg}</span>}
           action={
             <IconButton
               key="close"
               aria-label="Close"
               color="inherit"
-              // className={classes.close}
               onClick={this.onCloseSnackBar}
             >
               <CloseIcon />

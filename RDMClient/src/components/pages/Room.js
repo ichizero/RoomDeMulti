@@ -55,6 +55,7 @@ class Room extends React.Component {
     super(props);
 
     this.state = ({
+      rootPath: props.rootPath,
       isAuthenticated: props.isAuthenticated,
       userName: props.userName,
       userURL: props.userURL,
@@ -68,7 +69,6 @@ class Room extends React.Component {
         },
       ],
       requestMessage: "",
-      apiURL: "/B09/api"
     });
 
     this.getRequestList = this.getRequestList.bind(this);
@@ -148,7 +148,7 @@ class Room extends React.Component {
       return;
     }
 
-    return request.post(this.state.apiURL)
+    return request.post(this.state.rootPath + "api")
       .send('func=getRequest')
       .send('roomName=' + roomName);
   }
@@ -160,10 +160,10 @@ class Room extends React.Component {
     e.preventDefault();
 
     // Development環境でのダミー処理
-    // if (process.env.NODE_ENV !== "production") {
-    //   this.onCloseDialog();
-    //   return;
-    // }
+    if (process.env.NODE_ENV !== "production") {
+      this.onCloseDialog();
+      return;
+    }
 
     const userName = this.state.userName;
     const userURL = this.state.userURL;
@@ -173,7 +173,7 @@ class Room extends React.Component {
     if (requestMessage.length > 50) {
       this.dispatchSnackBarMessage("募集文は50文字以内です。");
     } else if (requestMessage !== "") {
-      request.post(this.state.apiURL)
+      request.post(this.state.rootPath + "api")
         .send('func=addRequest')
         .send('userName=' + userName)
         .send('userURL=' + userURL)
@@ -214,16 +214,22 @@ class Room extends React.Component {
    */
   render() {
     const { classes } = this.props;
+    const {
+      rootPath, isAuthenticated,
+      roomName,
+      requestList, requestMessage,
+      openDialog
+    } = this.state;
 
     return (
-      !(this.state.isAuthenticated) ?
+      !(isAuthenticated) ?
         (
-          <Redirect to="/B09" />
+          <Redirect to={rootPath} />
         ) : (
           <Grid container justify={"center"} spacing={24} className={classes.root}>
             <Grid item>
               <Typography type="display1" gutterBottom className={classes.h1title}>
-                {this.state.roomName}
+                {roomName}
               </Typography>
             </Grid>
 
@@ -243,7 +249,7 @@ class Room extends React.Component {
             <Grid item xs={12}>
               <Divider className={classes.listTopDiv}/>
               <List className={classes.list}>
-                {this.state.requestList.map((index) => {
+                {requestList.map((index) => {
                   const avatar = index.userName.charAt(0);
                   return (
                     <ListItem button divider component="a" href={index.userURL} key={index.userName}>
@@ -260,7 +266,7 @@ class Room extends React.Component {
 
             <div className="requestDialog">
               <Dialog
-                open={this.state.openDialog}
+                open={openDialog}
                 onClose={this.onCloseDialog}
                 aria-labelledby="form-dialog-title"
               >
@@ -276,7 +282,7 @@ class Room extends React.Component {
                     label="募集文"
                     type="text"
                     fullWidth
-                    value={this.state.requestMessage}
+                    value={requestMessage}
                     onChange={(e) => this.setState({ requestMessage: e.target.value })}
                   />
                 </DialogContent>

@@ -50,6 +50,7 @@ class RoomList extends React.Component {
     super(props);
 
     this.state = ({
+      rootPath: props.rootPath,
       isAuthenticated: props.isAuthenticated,
       userName: props.userName,
       isOpenCreateDialog: false,
@@ -61,7 +62,6 @@ class RoomList extends React.Component {
       ],
       roomName: "",
       newRoomName: "",
-      apiURL: "/B09/api",
     });
 
     this.getRoomList = this.getRoomList.bind(this);
@@ -116,8 +116,8 @@ class RoomList extends React.Component {
     if (process.env.NODE_ENV !== "production") {
       return;
     }
-
-    return request.post(this.state.apiURL)
+    
+    return request.post(this.state.rootPath + "api")
       .send('func=getRoomList')
       .send('userName=' + userName);
   }
@@ -140,7 +140,7 @@ class RoomList extends React.Component {
     if (roomName.length > 10) {
       this.dispatchSnackBarMessage("ルーム名は10文字以内です。");
     } else if (roomName != "") {
-      request.post(this.state.apiURL)
+      request.post(this.state.rootPath + "api")
         .send('func=createRoom')
         .send('roomName=' + roomName)
         .send('userName=' + userName)
@@ -169,7 +169,7 @@ class RoomList extends React.Component {
     if (roomName.length > 10) {
       this.dispatchSnackBarMessage("ルーム名は10文字以内です。");
     } else if (this.state.roomName != "") {
-      request.post(this.state.apiURL)
+      request.post(this.state.rootPath + "api")
         .send('func=joinRoom')
         .send('roomName=' + roomName)
         .send('userName=' + userName)
@@ -226,11 +226,16 @@ class RoomList extends React.Component {
    */
   render() {
     const { classes } = this.props;
+    const {
+      rootPath, isAuthenticated,
+      roomList, roomName, newRoomName,
+      isOpenCreateDialog, isOpenJoinDialog
+    } = this.state;
 
     return (
-      !(this.state.isAuthenticated) ?
+      !(isAuthenticated) ?
         (
-          <Redirect to="/B09" />
+          <Redirect to={rootPath} />
         ) : (
           <Grid container justify={"center"} spacing={24} className={classes.root}>
             <Grid item>
@@ -253,9 +258,9 @@ class RoomList extends React.Component {
             <Grid item xs={12}>
               <Divider className={classes.listTopDiv}/>
               <List className={classes.list}>
-                {this.state.roomList.map((index) => {
+                {roomList.map((index) => {
                   return (
-                    <ListItem className={classes.roomItem} button divider component="a" href={"/B09/room/" + index.roomName} key={index.roomName} >
+                    <ListItem className={classes.roomItem} button divider component="a" href={"./room/" + index.roomName} key={index.roomName} >
                       <ListItemText primary={index.roomName} />
                     </ListItem>
                   );
@@ -266,7 +271,7 @@ class RoomList extends React.Component {
 
             <div className="createRoomDialog">
               <Dialog
-                open={this.state.isOpenCreateDialog}
+                open={isOpenCreateDialog}
                 onClose={this.onCloseCreateDialog}
                 aria-labelledby="form-dialog-title"
               >
@@ -282,7 +287,7 @@ class RoomList extends React.Component {
                     label="ルーム名"
                     type="text"
                     fullWidth
-                    value={this.state.newRoomName}
+                    value={newRoomName}
                     onChange={(e) => this.setState({ newRoomName: e.target.value })}
                   />
                 </DialogContent>
@@ -299,7 +304,7 @@ class RoomList extends React.Component {
 
             <div className="joinRoomDialog">
               <Dialog
-                open={this.state.isOpenJoinDialog}
+                open={isOpenJoinDialog}
                 onClose={this.onCloseJoinDialog}
                 aria-labelledby="form-dialog2-title"
               >
@@ -315,7 +320,7 @@ class RoomList extends React.Component {
                     label="ルーム名"
                     type="text"
                     fullWidth
-                    value={this.state.roomName}
+                    value={roomName}
                     onChange={(e) => this.setState({ roomName: e.target.value })}
                   />
                 </DialogContent>
