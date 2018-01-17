@@ -36,9 +36,10 @@ class Login extends React.Component {
     super(props);
 
     this.state = ({
+      rootPath: props.rootPath,
+      isAuthenticated: props.isAuthenticated,
       userName: "", password: "",
       newUserName: "", newPassword: "", newUserURL: "",
-      isAuthenticated: props.isAuthenticated,
       isOpenDialog: false,
     });
 
@@ -111,11 +112,17 @@ class Login extends React.Component {
    */
   render() {
     const { classes } = this.props;
+    const {
+      rootPath, isAuthenticated,
+      userName, password,
+      newUserName, newUserURL, newPassword,
+      isOpenDialog
+    } = this.state;
 
     return (
-      this.state.isAuthenticated ?
+      isAuthenticated ?
         (
-          <Redirect to="/B09/room" />
+          <Redirect to={rootPath + "room"} />
         ) : (
           <Grid container justify={"center"} spacing={24} className={classes.root}>
             <Grid item xs={12}>
@@ -123,7 +130,7 @@ class Login extends React.Component {
                 <TextField
                   id="userName"
                   label="ユーザ名"
-                  value={this.state.userName}
+                  value={userName}
                   onChange={(e) => this.setState({ userName: e.target.value })}
                   margin="normal"
                   fullWidth
@@ -131,7 +138,7 @@ class Login extends React.Component {
                 <TextField
                   id="password"
                   label="パスワード"
-                  value={this.state.password}
+                  value={password}
                   onChange={(e) => this.setState({ password: e.target.value })}
                   type="password"
                   margin="normal"
@@ -148,7 +155,7 @@ class Login extends React.Component {
 
             <div className="requestDialog">
               <Dialog
-                open={this.state.isOpenDialog}
+                open={isOpenDialog}
                 onClose={this.onCloseDialog}
                 aria-labelledby="form-dialog-title"
               >
@@ -157,7 +164,7 @@ class Login extends React.Component {
                   <TextField
                     id="newUserName"
                     label="ユーザ名"
-                    value={this.state.newUserName}
+                    value={newUserName}
                     onChange={(e) => this.setState({ newUserName: e.target.value })}
                     margin="normal"
                     fullWidth
@@ -165,7 +172,7 @@ class Login extends React.Component {
                   <TextField
                     id="newPassword"
                     label="パスワード"
-                    value={this.state.newPassword}
+                    value={newPassword}
                     onChange={(e) => this.setState({ newPassword: e.target.value })}
                     type="password"
                     margin="normal"
@@ -174,7 +181,7 @@ class Login extends React.Component {
                   <TextField
                     id="newUserURL"
                     label="マルチURL"
-                    value={this.state.newUserURL}
+                    value={newUserURL}
                     onChange={(e) => this.setState({ newUserURL: e.target.value })}
                     margin="normal"
                     fullWidth

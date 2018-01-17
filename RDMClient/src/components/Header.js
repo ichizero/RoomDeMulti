@@ -7,8 +7,8 @@ import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
-import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
+
 import FaceIcon from 'material-ui-icons/Face';
 import ExitIcon from 'material-ui-icons/ExitToApp';
 
@@ -21,8 +21,8 @@ const styles = {
     flex: 1,
   },
   menuButton: {
-    marginLeft: -12,
-    marginRight: 20,
+    marginLeft: "-12px",
+    marginRight: "20px",
   },
 };
 
@@ -34,7 +34,10 @@ class Header extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { isAuthenticated: props.isAuthenticated };
+    this.state = {
+      isAuthenticated: props.isAuthenticated,
+      rootPath: props.rootPath,
+    };
 
     this.onLogout = this.onLogout.bind(this);
   }
@@ -56,7 +59,7 @@ class Header extends React.Component {
     e.preventDefault();
 
     this.props.onLogout();
-    this.props.history.push('/B09/');
+    this.props.history.push(this.state.rootPath);
   }
 
   /**

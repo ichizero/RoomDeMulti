@@ -1,22 +1,47 @@
 # RDMServlet
 
 ## 事前準備
-isp2からlibフォルダーとbin/classes/server/*.classをコピー
+isp2からlibフォルダーとbin/classes/server/*.classをコピー。
 
-SQLiteのJDBCドライバをDLして配置
+### 依存jar
+lib、WebContent/WEB-INF/libに配置
+- SQLiteのJDBCドライバ
+- JSON in Java
 
+### データベース
+localで実行する場合、RDMServlet直下にRDMDB.dbを配置する。
 
-## コンパイル
+## シェルスクリプト
+rdm.shに各種コマンドをまとめている。
+実行権限を与える必要があるかも。
+
+### コンパイル
 ```bash
-javac -d WebContent/WEB-INF/classes -cp "lib/*" src/b09/roomdemulti/*.java
+./rdm.sh -C
 ```
 
-## サーバー起動
+### サーバー起動
 ```bash
-java -cp "lib/*:bin/classes" server.AppServer 8080 / WebContent
+./rdm.sh -R
 ```
 
-## WARファイルの作成
+### WARファイルの作成
 ```bash
-jar cvf ROOT.war -C WebContent .
+./rdm.sh -MW
+```
+
+### WARサーバー起動
+```bash
+./rdm.sh -RW
+```
+
+## 各環境への対応
+DBManager.java
+```Java
+// Azure
+private static final String DB_PATH = "jdbc:sqlite:webapps/RDMDB.db";
+// local
+private static final String DB_PATH = "jdbc:sqlite:RDMDB.db";
+// Univ
+private static final String DB_PATH = "jdbc:sqlite:project/B09/RDMDB.db";
 ```
