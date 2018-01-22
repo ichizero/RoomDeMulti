@@ -20,10 +20,6 @@ public class DBManager {
     // Univ
     // private static final String DB_PATH = "jdbc:sqlite:project/B09/RDMDB.db";
 
-    private Room room;//ルーム
-    private User user;//ユーザ
-    private Request request;//リクエスト
-
     /**
      * アカウント認証を行うためのメソッド
      * 引数に与えられた ユーザ名 と パスワード がデータベース上に存在するものと一致した場合，

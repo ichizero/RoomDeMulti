@@ -71,3 +71,10 @@ App.jsのステートrootPathを変更することで各環境に対応。
 ```javascript
 rootPath: "/",  // Azure & local: "/", Univ: "/B09/"
 ```
+
+dist/index.html
+
+```html
+<script src="/bundle.js"></script>
+<script src="/B09/bundle.js"></script>
+```
